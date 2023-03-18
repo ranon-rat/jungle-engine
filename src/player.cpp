@@ -6,25 +6,25 @@
 
 void Player::Move() {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-    this->y += sin(angle) * 0.05;
-    this->x += cos(angle) * 0.05;
+    this->y += sin(horizontal_angle) * 0.05;
+    this->x += cos(horizontal_angle) * 0.05;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-    this->y -= sin(angle) * 0.05;
-    this->x -= cos(angle) * 0.05;
+    this->y -= sin(horizontal_angle) * 0.05;
+    this->x -= cos(horizontal_angle) * 0.05;
   }
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-    this->angle += RAD;
+    this->horizontal_angle += RAD;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-    this->angle -= RAD;
+    this->horizontal_angle -= RAD;
   }
-  if (angle < 0) {
-    angle = TAU - RAD;
+  if (horizontal_angle < 0) {
+    horizontal_angle = TAU - RAD;
   }
-  if (angle > TAU) {
-    angle -= TAU;
+  if (horizontal_angle > TAU) {
+    horizontal_angle -= TAU;
   }
 }
 
@@ -41,30 +41,28 @@ void Player::Show(sf::RenderWindow *window) {
   circle.setFillColor(sf::Color::Blue);
 
   window->draw(circle);
-  sf::Vertex line[] = {sf::Vector2f(WIDTH - 50, 50),
-                       sf::Vector2f(WIDTH - 50-cos(angle)*50, 50+sin(angle)*50)};
+  sf::Vertex line[] = {
+      sf::Vector2f(WIDTH - 50, 50),
+      sf::Vector2f(WIDTH - 50 + cos(horizontal_angle) * 50, 50 + sin(horizontal_angle) * 50)};
 
   window->draw(line, 2, sf::Lines);
-
 }
 void Player::SetPos(float i_x, float i_y) {
   x = i_x + .5;
   y = i_y + 0.5;
 }
 
-void Player::RayCast(sf::RenderWindow *window, int lines,
+void Player::RayCast(sf::RenderWindow *window, 
                      int map1[MAP_HEIGHT][MAP_WIDTH]) {
   float proj_dis = 0.5 * 5 / tan(50 * RAD);
 
   for (float xw = 0; xw <= WIDTH; xw++) {
-    float alpha = RAD * 58 * (floor(0.5 * WIDTH - xw) / (HEIGHT - 1)) + angle;
-    Square inter = Intersect(x, y, alpha, map1);
+    float alpha = FOV_VERTICAL * (floor(0.5 * WIDTH - xw) / (HEIGHT - 1)) + horizontal_angle;
+    Square inter = IntersectDDA(x, y, alpha, map1);
     if (inter.kind == 0) {
       return;
     }
-    float height =
-        (HEIGHT * proj_dis /
-         (inter.dis * cos(RAD * 58 * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)))));
+
     sf::Color color;
     switch (inter.kind) {
       case 1:
@@ -76,7 +74,7 @@ void Player::RayCast(sf::RenderWindow *window, int lines,
         color = sf::Color(0, 0,
                           (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
                               ((inter.side) ? 50 : 0));
-       
+
         break;
       case 3:
         color = sf::Color((255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
@@ -87,11 +85,11 @@ void Player::RayCast(sf::RenderWindow *window, int lines,
                               ((inter.side) ? 10 : 0));
         break;
       case 4:
-       color = sf::Color(0,
+        color = sf::Color(0,
                           (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
                               ((inter.side) ? 50 : 0),
                           0);
-      
+
         break;
       default:
         color = sf::Color((55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
@@ -103,14 +101,17 @@ void Player::RayCast(sf::RenderWindow *window, int lines,
 
         break;
     }
-    sf::RectangleShape line(sf::Vector2f(800 / lines, height));
+    float height =
+        (HEIGHT * proj_dis /
+         (inter.dis * cos(FOV_VERTICAL* (floor(0.5 * WIDTH - xw) / (WIDTH - 1)))));
+    sf::RectangleShape line(sf::Vector2f(1, height));
     line.setFillColor(color);
-    line.setPosition(sf::Vector2f(xw * 800 / lines, 0.5 * (HEIGHT - height)));
+    line.setPosition(sf::Vector2f(xw , 0.5 * (HEIGHT - height)));
 
     window->draw(line);
   }
 }
-Square Player::Intersect(float origin_x, float origin_y, float alpha,
+Square IntersectDDA(float origin_x, float origin_y, float alpha,
                          int map1[MAP_HEIGHT][MAP_WIDTH]) {
   // position in the map
   int check_ray_x = int(origin_x);

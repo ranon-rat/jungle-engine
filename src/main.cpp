@@ -55,7 +55,7 @@ int main() {
     window.clear();
     player.Move();
 
-    player.RayCast(&window, 800, map1);
+    player.RayCast(&window, map1);
     drawMap(&window);
     player.Show(&window);
 
