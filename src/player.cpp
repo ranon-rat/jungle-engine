@@ -73,10 +73,10 @@ void Player::RayCast(sf::RenderWindow *window, int lines,
                           0, 0);
         break;
       case 2:
-        color = sf::Color(0,
+        color = sf::Color(0, 0,
                           (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 50 : 0),
-                          0);
+                              ((inter.side) ? 50 : 0));
+       
         break;
       case 3:
         color = sf::Color((255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
@@ -87,9 +87,11 @@ void Player::RayCast(sf::RenderWindow *window, int lines,
                               ((inter.side) ? 10 : 0));
         break;
       case 4:
-        color = sf::Color(0, 0,
+       color = sf::Color(0,
                           (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 50 : 0));
+                              ((inter.side) ? 50 : 0),
+                          0);
+      
         break;
       default:
         color = sf::Color((55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
