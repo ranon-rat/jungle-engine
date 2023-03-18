@@ -5,7 +5,7 @@
 #define PI M_PI
 #define TAU PI * 2
 
-#define MAX_RENDER_DISTANCE 10
+#define MAX_RENDER_DISTANCE 100
 #define SCREEN_HEIGHT 800
 #define SCREEN_WIDTH 800
 
