@@ -1,4 +1,5 @@
 #include "player.hpp"
+
 #include <math.h>
 
 #include <SFML/Graphics.hpp>
@@ -14,10 +15,10 @@ void Player::Move() {
   }
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-    this->angle += RAD ;
+    this->angle += RAD;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-    this->angle -= RAD ;
+    this->angle -= RAD;
   }
   if (angle < 0) {
     angle = TAU - RAD;
@@ -32,51 +33,77 @@ void Player::Show(sf::RenderWindow *window) {
   circle.setPosition(sf::Vector2f(this->x * 10 - 5, this->y * 10 - 5));
   circle.setFillColor(sf::Color::Blue);
   window->draw(circle);
+  circle.setRadius(50);
+  circle.setOutlineThickness(2);
+  circle.setOutlineColor(sf::Color::White);
+
+  circle.setPosition(sf::Vector2f(WIDTH - 100, 0));
+  circle.setFillColor(sf::Color::Blue);
+
+  window->draw(circle);
+  sf::Vertex line[] = {sf::Vector2f(WIDTH - 50, 50),
+                       sf::Vector2f(WIDTH - 50-cos(angle)*50, 50+sin(angle)*50)};
+
+  window->draw(line, 2, sf::Lines);
+
 }
 void Player::SetPos(float i_x, float i_y) {
   x = i_x + .5;
   y = i_y + 0.5;
 }
 
-void Player::RayCast(sf::RenderWindow *window, int lines,  int map1[MAP_HEIGHT][MAP_WIDTH]) {
+void Player::RayCast(sf::RenderWindow *window, int lines,
+                     int map1[MAP_HEIGHT][MAP_WIDTH]) {
   float proj_dis = 0.5 * 5 / tan(50 * RAD);
 
   for (float xw = 0; xw <= WIDTH; xw++) {
-    float alpha =
-        RAD * 58 * (floor(0.5 * WIDTH - xw) / (HEIGHT- 1)) +
-        angle;
+    float alpha = RAD * 58 * (floor(0.5 * WIDTH - xw) / (HEIGHT - 1)) + angle;
     Square inter = Intersect(x, y, alpha, map1);
     if (inter.kind == 0) {
       return;
     }
     float height =
         (HEIGHT * proj_dis /
-         (inter.dis *
-          cos(RAD * 58 *
-              (floor(0.5 * WIDTH - xw) / (WIDTH - 1)))));
-      sf::Color color;
-      switch (inter.kind) {
-        case 1:
-          color = sf::Color((255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 50 : 0),0,0);
-          break;
-        case 2:
-          color = sf::Color(0,(255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 50 : 0),0);
-          break;
-        case 3:
-          color = sf::Color((255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 50 : 0),(255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 10 : 0),(255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 10 : 0));
-          break;
-        case 4:
-          color = sf::Color(0,0,(255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 50 : 0));
-          break;
-        default:
-          color = sf::Color((55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 50 : 0),(55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 10 : 0),(55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) - ((inter.side) ? 10 : 0));
+         (inter.dis * cos(RAD * 58 * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)))));
+    sf::Color color;
+    switch (inter.kind) {
+      case 1:
+        color = sf::Color((255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 50 : 0),
+                          0, 0);
+        break;
+      case 2:
+        color = sf::Color(0,
+                          (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 50 : 0),
+                          0);
+        break;
+      case 3:
+        color = sf::Color((255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 50 : 0),
+                          (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 10 : 0),
+                          (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 10 : 0));
+        break;
+      case 4:
+        color = sf::Color(0, 0,
+                          (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 50 : 0));
+        break;
+      default:
+        color = sf::Color((55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 50 : 0),
+                          (55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 10 : 0),
+                          (55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
+                              ((inter.side) ? 10 : 0));
 
-          break;
-      }
+        break;
+    }
     sf::RectangleShape line(sf::Vector2f(800 / lines, height));
     line.setFillColor(color);
-    line.setPosition(
-        sf::Vector2f(xw * 800 / lines, 0.5 * (HEIGHT - height)));
+    line.setPosition(sf::Vector2f(xw * 800 / lines, 0.5 * (HEIGHT - height)));
 
     window->draw(line);
   }
@@ -90,8 +117,8 @@ Square Player::Intersect(float origin_x, float origin_y, float alpha,
   float ray_x = origin_x;
   float ray_y = origin_y;
   // points of intersection
-  float y_ray_intersection ;
-  float x_ray_intersection ;
+  float y_ray_intersection;
+  float x_ray_intersection;
 
   // this will be used for knowing the line size depending of wich direction we
   // are using
@@ -147,8 +174,8 @@ Square Player::Intersect(float origin_x, float origin_y, float alpha,
       tileFound = (map1[check_ray_y][check_ray_x] > 0);
     }
   }
-  if(!tileFound){
-    dis=MAX_RENDER_DISTANCE;
+  if (!tileFound) {
+    dis = MAX_RENDER_DISTANCE;
   }
 
   y_ray_intersection = origin_y + sin(alpha) * dis;
