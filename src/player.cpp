@@ -57,7 +57,8 @@ void Player::RayCast(sf::RenderWindow *window,
   float proj_dis = 0.5 * 5 / tan(50 * RAD);
 
   for (float xw = 0; xw <= WIDTH; xw++) {
-    float alpha = FOV_VERTICAL * (floor(0.5 * WIDTH - xw) / (HEIGHT - 1)) + horizontal_angle;
+
+    float alpha = FOV_VERTICAL * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)) + horizontal_angle;
     Square inter = IntersectDDA(x, y, alpha, map1);
     if (inter.kind == 0) {
       return;
@@ -103,7 +104,7 @@ void Player::RayCast(sf::RenderWindow *window,
     }
     float height =
         (HEIGHT * proj_dis /
-         (inter.dis * cos(FOV_VERTICAL* (floor(0.5 * WIDTH - xw) / (WIDTH - 1)))));
+         (inter.dis * cos(alpha-horizontal_angle)));
     sf::RectangleShape line(sf::Vector2f(1, height));
     line.setFillColor(color);
     line.setPosition(sf::Vector2f(xw , 0.5 * (HEIGHT - height)));
