@@ -1,6 +1,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "global.hpp"
 struct Square{
     float x;
     float y;
@@ -20,7 +21,7 @@ class Player {
   void Move();
   void SetPos(float, float);
   void Show(sf::RenderWindow *);
-  void RayCast(sf::RenderWindow *window, int lines, int map1[8][8]);
+  void RayCast(sf::RenderWindow *window, int lines, int map1[MAP_HEIGHT][MAP_WIDTH]);
   Square Intersect(float origin_x, float origin_y,
-                                       float alpha, int map1[8][8]) ;
+                                       float alpha, int map1[MAP_HEIGHT][MAP_WIDTH]) ;
 };

@@ -1,11 +1,11 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
+#include "global.hpp"
 #include "./maps.hpp"
 #include "player.hpp"
-#define WIDTH 800
-#define HEIGHT 800
+
+
 
 sf::RectangleShape wallGen(int x, int y) {
   sf::RectangleShape wall(sf::Vector2f(10, 10));
@@ -15,8 +15,8 @@ sf::RectangleShape wallGen(int x, int y) {
   return wall;
 }
 void drawMap(sf::RenderWindow *window) {
-  for (int y = 0; y < 8; y++) {
-    for (int x = 0; x < 8; x++) {
+  for (int y = 0; y < MAP_HEIGHT; y++) {
+    for (int x = 0; x < MAP_WIDTH; x++) {
       /// defino las caracteristicas de los sectores
       sf::RectangleShape wall = wallGen(x, y);
       sf::Color color;
