@@ -1,9 +1,12 @@
 
 #include <SFML/Graphics.hpp>
+#include <SDL2/SDL.h>
+
 #include <iostream>
 #include "global.hpp"
 #include "./maps.hpp"
 #include "player.hpp"
+
 
 
 
@@ -14,6 +17,8 @@ sf::RectangleShape wallGen(int x, int y) {
   wall.setOutlineThickness(1);
   return wall;
 }
+
+/*
 void drawMap(sf::RenderWindow *window) {
   for (int y = 0; y < MAP_HEIGHT; y++) {
     for (int x = 0; x < MAP_WIDTH; x++) {
@@ -64,4 +69,4 @@ int main() {
   }
 
   return 0;
-}
+}*/
