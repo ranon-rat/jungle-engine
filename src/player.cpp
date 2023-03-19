@@ -11,30 +11,29 @@ void Player::Move(SDL_Event event) {
   if (event.type != SDL_KEYDOWN) return;
   switch (event.key.keysym.sym) {
     case SDLK_w:
-    std::cout<<"w\n";
-      this->y += sin(horizontal_angle) * 0.05;
-      this->x += cos(horizontal_angle) * 0.05;
+      std::cout << "w\n";
+      this->y += sin(horizontal_angle) * 0.1;
+      this->x += cos(horizontal_angle) * 0.1;
       break;
     case SDLK_s:
-        std::cout<<"s\n";
+      std::cout << "s\n";
 
-      this->y -= sin(horizontal_angle) * 0.05;
-      this->x -= cos(horizontal_angle) * 0.05;
+      this->y -= sin(horizontal_angle) * 0.1;
+      this->x -= cos(horizontal_angle) * 0.1;
       break;
     case SDLK_a:
-            std::cout<<"a\n";
+      std::cout << "a\n";
 
       this->horizontal_angle += RAD;
       break;
     case SDLK_d:
-                std::cout<<"d\n";
+      std::cout << "d\n";
 
       this->horizontal_angle -= RAD;
       break;
     default:
       break;
   }
-
 
   if (horizontal_angle < 0) {
     horizontal_angle = TAU - RAD;
@@ -47,8 +46,10 @@ void Player::Move(SDL_Event event) {
 
 void Player::Show(SDL_Renderer *renderer) {
   // SDL2 Not supports circles
-  SDL_Rect rect = {(int)this->x * 10 - 5, (int)this->y * 10 - 5, 10, 10};
+  SDL_Rect rect = {(int)this->x * 10 - 5,(int)this->y * 10 - 5, 10, 10};
   SDL_Color color = {255, 0, 0, 255};
+SDL_RenderFillRect(renderer,&rect);
+
 }
 
 void Player::SetPos(float i_x, float i_y) {
@@ -109,11 +110,10 @@ void Player::RayCast(SDL_Renderer *renderer, int map1[MAP_HEIGHT][MAP_WIDTH]) {
     }
     float height =
         (HEIGHT * proj_dis / (inter.dis * cos(alpha - horizontal_angle)));
-    SDL_Rect line = {(int)xw, int(floor(0.5 * (HEIGHT - height))), 1,
-                     (int)height};
 
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderFillRect(renderer, &line);
+    SDL_RenderDrawLineF(renderer, xw, floor(0.5 * (HEIGHT - height)), xw,
+                        floor(0.5 * (HEIGHT - height)) + height);
   }
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }

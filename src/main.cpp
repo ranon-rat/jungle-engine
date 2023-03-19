@@ -73,8 +73,9 @@ int main(int argc, char *argv[]) {
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
 
-    world->draw(renderer);
     player.RayCast(renderer, points);
+    world->draw(renderer);
+    player.Show(renderer);
     SDL_RenderPresent(renderer);
     SDL_Delay(1000 / 60);
     SDL_RenderClear(renderer);
