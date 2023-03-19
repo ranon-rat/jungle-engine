@@ -112,7 +112,7 @@ void Player::RayCast(SDL_Renderer *renderer, int map1[MAP_HEIGHT][MAP_WIDTH]) {
     float height =
         (HEIGHT * proj_dis / (inter.dis * cos(alpha - horizontal_angle)));
 
-    DrawTexture(inter.x,inter.y,inter.xc,inter.yc,(inter.xc-1),(inter.yc-1),floor(0.5 * (HEIGHT - height)),xw,(int)(floor(0.5 * (HEIGHT - height)) + height),color,renderer);
+    DrawTexture(inter.x,inter.y,inter.xc,inter.yc,(inter.xc-1),(inter.yc-1),floor(0.5 * (HEIGHT - height)),(int)(floor(0.5 * (HEIGHT - height)) + height),xw,color,renderer);
   //  SDL_RenderDrawLineF(renderer, xw, floor(0.5 * (HEIGHT - height)), xw,
   //                      floor(0.5 * (HEIGHT - height)) + height);
   }
@@ -128,6 +128,7 @@ void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
                  float start,float end, int xw, SDL_Color color,
                  SDL_Renderer *renderer) {
   float wallLength = Dis(x1, y1, x2, y2);
+  // idk
   float i = (Dis(x1, y1, xi, yi) / wallLength) * 8+1;
   int *column = texture[(int)i%8];
   for (int u = start; u < end; u++) {
