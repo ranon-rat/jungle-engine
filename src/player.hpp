@@ -7,6 +7,8 @@
 struct Square {
   float x;
   float y;
+  float yc;
+  float xc;
 
   float dis;
   int kind;
@@ -15,6 +17,8 @@ struct Square {
 
 Square IntersectDDA(float origin_x, float origin_y, float alpha,
                     int map1[MAP_HEIGHT][MAP_WIDTH]);
+float Dis(float x1, float y1,float x2, float y2);
+void DrawTexture(float xi, float yi,float x1,float y1,float x2,float y2, float start,int xw,float end,SDL_Color color,SDL_Renderer *renderer);
 
 struct Sector {};
 

@@ -6,28 +6,30 @@
 #include <iostream>
 
 #include "global.hpp"
+int texture[8][8] = {
+    {2, 2, 2, 2, 1, 1, 1, 1}, {2, 2, 2, 2, 1, 1, 1, 1},
+    {2, 2, 2, 2, 1, 1, 1, 1}, {2, 2, 2, 2, 1, 1, 1, 1},
+    {1, 1, 1, 1, 2, 2, 2, 2}, {1, 1, 1, 1, 2, 2, 2, 2},
+    {1, 1, 1, 1, 2, 2, 2, 2}, {1, 1, 1, 1, 2, 2, 2, 2},
+};
 
 void Player::Move(SDL_Event event) {
   if (event.type != SDL_KEYDOWN) return;
   switch (event.key.keysym.sym) {
     case SDLK_w:
-      std::cout << "w\n";
       this->y += sin(horizontal_angle) * 0.1;
       this->x += cos(horizontal_angle) * 0.1;
       break;
     case SDLK_s:
-      std::cout << "s\n";
 
       this->y -= sin(horizontal_angle) * 0.1;
       this->x -= cos(horizontal_angle) * 0.1;
       break;
     case SDLK_a:
-      std::cout << "a\n";
 
       this->horizontal_angle += RAD;
       break;
     case SDLK_d:
-      std::cout << "d\n";
 
       this->horizontal_angle -= RAD;
       break;
@@ -46,10 +48,9 @@ void Player::Move(SDL_Event event) {
 
 void Player::Show(SDL_Renderer *renderer) {
   // SDL2 Not supports circles
-  SDL_Rect rect = {(int)this->x * 10 - 5,(int)this->y * 10 - 5, 10, 10};
-  SDL_Color color = {255, 0, 0, 255};
-SDL_RenderFillRect(renderer,&rect);
-
+  SDL_Rect rect = {(int)this->x * 10 - 5, (int)this->y * 10 - 5, 10, 10};
+  SDL_Color color = {100, 0, 0, 100};
+  SDL_RenderFillRect(renderer, &rect);
 }
 
 void Player::SetPos(float i_x, float i_y) {
@@ -74,48 +75,66 @@ void Player::RayCast(SDL_Renderer *renderer, int map1[MAP_HEIGHT][MAP_WIDTH]) {
     SDL_Color color;
     switch (inter.kind) {
       case 1:
-        color = {Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+        color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
                        ((inter.side) ? 50 : 0)),
-                 0, 0, 255};
+                 0, 0, 100};
         break;
 
       case 2:
         color = {0, 0,
-                 Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
                        ((inter.side) ? 50 : 0)),
-                 255};
+                 100};
         break;
 
       case 3:
-        color = {Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+        color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
                        ((inter.side) ? 50 : 0)),
-                 Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
                        ((inter.side) ? 50 : 0)),
-                 Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
                        ((inter.side) ? 50 : 0)),
-                 255};
+                 100};
         break;
 
       case 4:
 
         color = {0,
-                 Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
                        ((inter.side) ? 50 : 0)),
-                 0, 255};
+                 0, 100};
         break;
 
       default:
-        color = {255, 255, 255, 255};
+        color = {100, 100, 100, 100};
         break;
     }
     float height =
         (HEIGHT * proj_dis / (inter.dis * cos(alpha - horizontal_angle)));
 
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderDrawLineF(renderer, xw, floor(0.5 * (HEIGHT - height)), xw,
-                        floor(0.5 * (HEIGHT - height)) + height);
+    DrawTexture(inter.x,inter.y,inter.xc,inter.yc,(inter.xc-1),(inter.yc-1),floor(0.5 * (HEIGHT - height)),xw,(int)(floor(0.5 * (HEIGHT - height)) + height),color,renderer);
+  //  SDL_RenderDrawLineF(renderer, xw, floor(0.5 * (HEIGHT - height)), xw,
+  //                      floor(0.5 * (HEIGHT - height)) + height);
   }
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
+}
+void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
+                 float start, int xw, float end, SDL_Color color,
+                 SDL_Renderer *renderer) {
+  float wallLength = Dis(x1, y1, x2, y2);
+  float i = (Dis(x1, y1, xi, yi) / wallLength) * 8;
+  int *column = texture[(int)i];
+  for (int u = start; u < end; u++) {
+    int v =int(((float) abs(u-start) / abs(start - end)) * 8);
+    int p = column[v];
+    SDL_SetRenderDrawColor(renderer, color.r*p, color.g*p, color.b*p, color.a*p);
+
+    SDL_RenderDrawPoint(renderer, xw, u);
+  }
+};
+
+float Dis(float x1, float y1, float x2, float y2) {
+  return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 Square IntersectDDA(float origin_x, float origin_y, float alpha,
                     int map1[MAP_HEIGHT][MAP_WIDTH]) {
@@ -191,6 +210,8 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
   return Square{
       .x = x_ray_intersection,
       .y = y_ray_intersection,
+        . yc=(float)check_ray_y,
+  .xc=(float)check_ray_x,
       .dis = dis,
       .kind = map1[check_ray_y][check_ray_x],
       .side = side,
