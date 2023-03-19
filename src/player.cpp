@@ -118,8 +118,14 @@ void Player::RayCast(SDL_Renderer *renderer, int map1[MAP_HEIGHT][MAP_WIDTH]) {
   }
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
 }
+// xi and yi are the coordinates of intersection
+// x1,y1 are the starting point of the polygon, lets call it a
+// x2,y2 are the end point of the polygon lets call it b
+// start and end are the y coordinates on the screen to draw the texture
+// same for xw but its the x coordinate of the screen
+
 void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
-                 float start, int xw, float end, SDL_Color color,
+                 float start,float end, int xw, SDL_Color color,
                  SDL_Renderer *renderer) {
   float wallLength = Dis(x1, y1, x2, y2);
   float i = (Dis(x1, y1, xi, yi) / wallLength) * 8+1;
