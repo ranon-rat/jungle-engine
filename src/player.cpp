@@ -1,119 +1,124 @@
 #include "player.hpp"
 
+#include <SDL2/SDL.h>
 #include <math.h>
 
-#include <SFML/Graphics.hpp>
+#include <iostream>
 
-void Player::Move() {
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-    this->y += sin(horizontal_angle) * 0.05;
-    this->x += cos(horizontal_angle) * 0.05;
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-    this->y -= sin(horizontal_angle) * 0.05;
-    this->x -= cos(horizontal_angle) * 0.05;
+#include "global.hpp"
+
+void Player::Move(SDL_Event event) {
+  if (event.type != SDL_KEYDOWN) return;
+  switch (event.key.keysym.sym) {
+    case SDLK_w:
+    std::cout<<"w\n";
+      this->y += sin(horizontal_angle) * 0.05;
+      this->x += cos(horizontal_angle) * 0.05;
+      break;
+    case SDLK_s:
+        std::cout<<"s\n";
+
+      this->y -= sin(horizontal_angle) * 0.05;
+      this->x -= cos(horizontal_angle) * 0.05;
+      break;
+    case SDLK_a:
+            std::cout<<"a\n";
+
+      this->horizontal_angle += RAD;
+      break;
+    case SDLK_d:
+                std::cout<<"d\n";
+
+      this->horizontal_angle -= RAD;
+      break;
+    default:
+      break;
   }
 
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-    this->horizontal_angle += RAD;
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-    this->horizontal_angle -= RAD;
-  }
+
   if (horizontal_angle < 0) {
     horizontal_angle = TAU - RAD;
   }
+
   if (horizontal_angle > TAU) {
     horizontal_angle -= TAU;
   }
 }
 
-void Player::Show(sf::RenderWindow *window) {
-  sf::CircleShape circle(5);
-  circle.setPosition(sf::Vector2f(this->x * 10 - 5, this->y * 10 - 5));
-  circle.setFillColor(sf::Color::Blue);
-  window->draw(circle);
-  circle.setRadius(50);
-  circle.setOutlineThickness(2);
-  circle.setOutlineColor(sf::Color::White);
-
-  circle.setPosition(sf::Vector2f(WIDTH - 100, 0));
-  circle.setFillColor(sf::Color::Blue);
-
-  window->draw(circle);
-  sf::Vertex line[] = {
-      sf::Vector2f(WIDTH - 50, 50),
-      sf::Vector2f(WIDTH - 50 + cos(horizontal_angle) * 50, 50 + sin(horizontal_angle) * 50)};
-
-  window->draw(line, 2, sf::Lines);
+void Player::Show(SDL_Renderer *renderer) {
+  // SDL2 Not supports circles
+  SDL_Rect rect = {(int)this->x * 10 - 5, (int)this->y * 10 - 5, 10, 10};
+  SDL_Color color = {255, 0, 0, 255};
 }
+
 void Player::SetPos(float i_x, float i_y) {
   x = i_x + .5;
   y = i_y + 0.5;
 }
 
-void Player::RayCast(sf::RenderWindow *window, 
-                     int map1[MAP_HEIGHT][MAP_WIDTH]) {
-  float proj_dis = 0.5 * 5 / tan(50 * RAD);
+void Player::RayCast(SDL_Renderer *renderer, int map1[MAP_HEIGHT][MAP_WIDTH]) {
+  float proj_dis = 0.5 * 5 / tan(FOV_VERTICAL);
 
   for (float xw = 0; xw <= WIDTH; xw++) {
+    float alpha = FOV_VERTICAL * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)) +
+                  horizontal_angle;
 
-    float alpha = FOV_VERTICAL * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)) + horizontal_angle;
     Square inter = IntersectDDA(x, y, alpha, map1);
+
     if (inter.kind == 0) {
       return;
     }
 
-    sf::Color color;
+    // sf::Color color;
+    SDL_Color color;
     switch (inter.kind) {
       case 1:
-        color = sf::Color((255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 50 : 0),
-                          0, 0);
+        color = {Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                       ((inter.side) ? 50 : 0)),
+                 0, 0, 255};
         break;
+
       case 2:
-        color = sf::Color(0, 0,
-                          (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 50 : 0));
-
+        color = {0, 0,
+                 Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                       ((inter.side) ? 50 : 0)),
+                 255};
         break;
+
       case 3:
-        color = sf::Color((255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 50 : 0),
-                          (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 10 : 0),
-                          (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 10 : 0));
+        color = {Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                       ((inter.side) ? 50 : 0)),
+                 Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                       ((inter.side) ? 50 : 0)),
+                 Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                       ((inter.side) ? 50 : 0)),
+                 255};
         break;
+
       case 4:
-        color = sf::Color(0,
-                          (255 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 50 : 0),
-                          0);
 
+        color = {0,
+                 Uint8(255 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
+                       ((inter.side) ? 50 : 0)),
+                 0, 255};
         break;
-      default:
-        color = sf::Color((55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 50 : 0),
-                          (55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 10 : 0),
-                          (55 * (1 - inter.dis / MAX_RENDER_DISTANCE)) -
-                              ((inter.side) ? 10 : 0));
 
+      default:
+        color = {255, 255, 255, 255};
         break;
     }
     float height =
-        (HEIGHT * proj_dis /
-         (inter.dis * cos(alpha-horizontal_angle)));
-    sf::RectangleShape line(sf::Vector2f(1, height));
-    line.setFillColor(color);
-    line.setPosition(sf::Vector2f(xw , 0.5 * (HEIGHT - height)));
+        (HEIGHT * proj_dis / (inter.dis * cos(alpha - horizontal_angle)));
+    SDL_Rect line = {(int)xw, int(floor(0.5 * (HEIGHT - height))), 1,
+                     (int)height};
 
-    window->draw(line);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderFillRect(renderer, &line);
   }
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }
 Square IntersectDDA(float origin_x, float origin_y, float alpha,
-                         int map1[MAP_HEIGHT][MAP_WIDTH]) {
+                    int map1[MAP_HEIGHT][MAP_WIDTH]) {
   // position in the map
   int check_ray_x = int(origin_x);
   int check_ray_y = int(origin_y);
@@ -149,7 +154,6 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
   if (sin(alpha) < 0) {
     step_y = -1;
     ray_dist_y = (origin_y - float(check_ray_y)) * y_unit;
-
   } else {
     ray_dist_y = (float(check_ray_y + 1) - ray_y) * y_unit;
   }
@@ -166,7 +170,6 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
       dis = ray_dist_x;
       ray_dist_x += x_unit;
       side = true;
-
     } else {
       check_ray_y += step_y;
       dis = ray_dist_y;

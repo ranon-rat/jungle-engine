@@ -1,72 +1,88 @@
-
-#include <SFML/Graphics.hpp>
 #include <SDL2/SDL.h>
 
-#include <iostream>
+#include <vector>
+
 #include "global.hpp"
-#include "./maps.hpp"
+#include "map.hpp"
 #include "player.hpp"
 
+int main(int argc, char *argv[]) {
+  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
 
-
-
-sf::RectangleShape wallGen(int x, int y) {
-  sf::RectangleShape wall(sf::Vector2f(10, 10));
-  wall.setOutlineColor(sf::Color(0, 0, 0));
-  wall.setPosition(sf::Vector2f(x * 10, y * 10));
-  wall.setOutlineThickness(1);
-  return wall;
-}
-
-/*
-void drawMap(sf::RenderWindow *window) {
-  for (int y = 0; y < MAP_HEIGHT; y++) {
-    for (int x = 0; x < MAP_WIDTH; x++) {
-      /// defino las caracteristicas de los sectores
-      sf::RectangleShape wall = wallGen(x, y);
-      sf::Color color;
-      switch (map1[y][x]) {
-        case 1:
-          color = sf::Color::Red;
-          break;
-        case 2:
-          color = sf::Color::Blue;
-          break;
-        case 3:
-          color = sf::Color::White;
-          break;
-        case 4:
-          color = sf::Color::Green;
-          break;
-        default:
-          color = sf::Color::Yellow;
-          break;
-      }
-      wall.setFillColor(color);
-
-      window->draw(wall);
-    }
+    return 1;
   }
-}
-int main() {
-  sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "jungle engine");
+
+  SDL_Window *window =
+      SDL_CreateWindow("SDL2Test", 100, 100, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+
+  if (window == NULL) {
+    SDL_Log("Unable to create window: %s", SDL_GetError());
+
+    return 1;
+  }
+
+  SDL_Renderer *renderer =
+      SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+  if (renderer == NULL) {
+    SDL_Log("Unable to create renderer: %s", SDL_GetError());
+
+    return 1;
+  }
+
+  SDL_bool done = SDL_FALSE;
+
+  // Temp
+  int points[MAP_HEIGHT][MAP_WIDTH] = {
+      {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 3, 0, 3, 0, 3, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 2, 2, 0, 2, 2, 0, 0, 0, 0, 3, 0, 3, 0, 3, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 4, 0, 0, 0, 0, 5, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 4, 0, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+
+  World *world = new World(points);
+
   Player player;
-  while (window.isOpen()) {
-    sf::Event event;
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) window.close();
+
+  while (done == SDL_FALSE) {
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event)) {
+      player.Move(event);
+
+      if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
 
-    window.clear();
-    player.Move();
-
-    player.RayCast(&window, map1);
-    drawMap(&window);
-    player.Show(&window);
-
-    window.display();
-
+    world->draw(renderer);
+    player.RayCast(renderer, points);
+    SDL_RenderPresent(renderer);
+    SDL_Delay(1000 / 60);
+    SDL_RenderClear(renderer);
   }
+
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
 
   return 0;
-}*/
+}

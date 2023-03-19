@@ -1,8 +1,9 @@
+#include <SDL2/SDL.h>
 
-#include <SFML/Graphics.hpp>
 #include <iostream>
 
 #include "global.hpp"
+#include "map.hpp"
 struct Square {
   float x;
   float y;
@@ -11,22 +12,24 @@ struct Square {
   int kind;
   bool side;
 };
-struct Sector{};
+
+Square IntersectDDA(float origin_x, float origin_y, float alpha,
+                    int map1[MAP_HEIGHT][MAP_WIDTH]);
+
+struct Sector {};
+
 class Player {
-  float x = 2.5;
-  float y = 2.5;
+  float x = 1.5;
+  float y = 1.5;
+
   float step_x = 0;
   float step_y = 0;
+
   float horizontal_angle = 0;
 
  public:
-  void Move();
+  void Move(SDL_Event event);
   void SetPos(float, float);
-  void Show(sf::RenderWindow *);
-  void RayCast(sf::RenderWindow *window,
-               int map1[MAP_HEIGHT][MAP_WIDTH]);
-
+  void Show(SDL_Renderer *renderer);
+  void RayCast(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH]);
 };
-
-  Square IntersectDDA(float origin_x, float origin_y, float alpha,
-                   int map1[MAP_HEIGHT][MAP_WIDTH]);
