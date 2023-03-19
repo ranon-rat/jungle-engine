@@ -75,38 +75,38 @@ void Player::RayCast(SDL_Renderer *renderer, int map1[MAP_HEIGHT][MAP_WIDTH]) {
     SDL_Color color;
     switch (inter.kind) {
       case 1:
-        color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
-                       ((inter.side) ? 50 : 0)),
-                 0, 0, 100};
+        color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE)/
+                       ((inter.side) ? 2 : 1)),
+                 0, 0, 255};
         break;
 
       case 2:
         color = {0, 0,
-                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
-                       ((inter.side) ? 50 : 0)),
-                 100};
+                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE)/
+                       ((inter.side) ? 2 : 1)),
+                 255};
         break;
 
       case 3:
-        color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
-                       ((inter.side) ? 50 : 0)),
-                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
-                       ((inter.side) ? 50 : 0)),
-                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
-                       ((inter.side) ? 50 : 0)),
-                 100};
+        color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE)/
+                       ((inter.side) ? 2 : 1)),
+                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE)/
+                       ((inter.side) ? 2 : 1)),
+                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE)/
+                       ((inter.side) ? 2 : 1)),
+                 255};
         break;
 
       case 4:
 
         color = {0,
-                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) -
-                       ((inter.side) ? 50 : 0)),
-                 0, 100};
+                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE)/
+                       ((inter.side) ? 2 : 1)),
+                 0, 255};
         break;
 
       default:
-        color = {100, 100, 100, 100};
+        color = {100, 100, 100, 255};
         break;
     }
     float height =
@@ -122,11 +122,11 @@ void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
                  float start, int xw, float end, SDL_Color color,
                  SDL_Renderer *renderer) {
   float wallLength = Dis(x1, y1, x2, y2);
-  float i = (Dis(x1, y1, xi, yi) / wallLength) * 8;
-  int *column = texture[(int)i];
+  float i = (Dis(x1, y1, xi, yi) / wallLength) * 8+1;
+  int *column = texture[(int)i%8];
   for (int u = start; u < end; u++) {
-    int v =int(((float) abs(u-start) / abs(start - end)) * 8);
-    int p = column[v];
+    int v =( (abs(u-start) / abs(start - end))*8);
+    int p = column[v%8];
     SDL_SetRenderDrawColor(renderer, color.r*p, color.g*p, color.b*p, color.a*p);
 
     SDL_RenderDrawPoint(renderer, xw, u);

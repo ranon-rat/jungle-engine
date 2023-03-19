@@ -2,7 +2,7 @@
 
 #define TAU M_PI * 2
 
-#define MAX_RENDER_DISTANCE 30
+#define MAX_RENDER_DISTANCE 100
 
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
