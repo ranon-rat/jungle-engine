@@ -8,10 +8,10 @@ int texture[8][8] = {
 };
 void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
-  float proj_dis = 0.5 * 7 / tan(FOV_VERTICAL);
+  float proj_dis = 0.5 * 7 / tan(FOV_HORIZONTAL);
 
   for (float xw = 0; xw <= WIDTH; xw++) {
-    float alpha = FOV_VERTICAL * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)) +
+    float alpha = FOV_HORIZONTAL * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)) +
                   p.horizontal_angle;
 
     Square inter = IntersectDDA(p.x, p.y, alpha, points);
