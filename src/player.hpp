@@ -25,5 +25,4 @@ class Player {
   void SetPos(float, float);
   void Show(SDL_Renderer *renderer);
 };
-void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
-                      Player p);
+
