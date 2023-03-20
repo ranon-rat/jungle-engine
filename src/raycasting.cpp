@@ -6,9 +6,15 @@ int texture[8][8] = {
     {1, 1, 1, 1, 2, 2, 2, 2}, {1, 1, 1, 1, 2, 2, 2, 2},
     {1, 1, 1, 1, 2, 2, 2, 2}, {1, 1, 1, 1, 2, 2, 2, 2},
 };
+int sky[8][8] = {
+    {0, 1, 2, 3, 0, 1, 2, 3}, {0, 1, 2, 3, 0, 1, 2, 3},
+    {0, 1, 2, 3, 0, 1, 2, 3}, {0, 1, 2, 3, 0, 1, 2, 3},
+    {0, 1, 2, 3, 0, 1, 2, 3}, {0, 1, 2, 3, 0, 1, 2, 3},
+    {0, 1, 2, 3, 0, 1, 2, 3}, {0, 1, 2, 3, 0, 1, 2, 3},
+};
 void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
-  float proj_dis = 0.5 * 5 / tan(FOV_HORIZONTAL);
+  float proj_dis = 0.5 * 5 / tan(FOV_VERTICAL);
 
   for (float xw = 0; xw <= WIDTH; xw++) {
     float alpha = FOV_HORIZONTAL * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)) +
@@ -68,11 +74,23 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
   }
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
 }
+
+void DrawSky(int xw,float alpha ,  SDL_Renderer *renderer){
+
+  // for drawing the sky we only need to do the next
+  // we get the angle that we are seeing
+  // we get the column
+  // then we draw it
+  // the sky needs to be draw first
+  // before doing the raycasting
+
+}
 // xi and yi are the coordinates of intersection
 // x1,y1 are the starting point of the polygon, lets call it a
 // x2,y2 are the end point of the polygon lets call it b
 // start and end are the y coordinates on the screen to draw the texture
 // same for xw but its the x coordinate of the screen
+
 
 void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
                  float start, float end, int xw, SDL_Color color,
@@ -81,7 +99,7 @@ void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
   // idk
   float i = (Dis(x1, y1, xi, yi) / wallLength) * 7;
   int *column = texture[(int)i];
-  for (int u = fmax(start,0); u < fmin(end,HEIGHT); u++) {
+  for (int u = fmax(start, 0); u < fmin(end, HEIGHT); u++) {
     int v = (u - start) / abs(end - start) * 7;
     int p = column[v];
 
