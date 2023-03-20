@@ -78,7 +78,23 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
 }
 
-void DrawSky(int xw, float alpha, SDL_Renderer *renderer) {
+void DrawSky(Player player, SDL_Renderer *renderer) {
+  for (int y = 0; y < HEIGHT; y++) {
+    int u = int((float(y) / HEIGHT) * SKY_HEIGHT);
+
+    for (int x = 0; x < WIDTH; x++) {
+      float xo =SKY_WIDTH* ((player.horizontal_angle / RAD) * 3 - float(x))/(360*3);
+      if (xo < 0) xo += SKY_WIDTH;
+
+      if (xo >= SKY_WIDTH) xo = fmod(xo, SKY_WIDTH);
+
+      int p = sky[u * SKY_WIDTH + (int)xo];
+      // it works the same as the other
+      SDL_SetRenderDrawColor(renderer, 20 * p, 0, 20 * p, 255);
+      SDL_RenderDrawPoint(renderer, x, y);
+    }
+  }
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
   // for drawing the sky we only need to do the next
   // we get the angle that we are seeing
   // we get the column
@@ -196,9 +212,9 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
       tileFound = (map1[check_ray_y][check_ray_x] > 0);
     }
   }
-// is just a basic vector
-// i just need to know the angle and how big it is
-// and i know it so i dont need to much
+  // is just a basic vector
+  // i just need to know the angle and how big it is
+  // and i know it so i dont need to much
   y_ray_intersection = origin_y + sin(alpha) * dis;
   x_ray_intersection = origin_x + cos(alpha) * dis;
 

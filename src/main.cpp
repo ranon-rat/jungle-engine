@@ -72,10 +72,11 @@ int main(int argc, char *argv[]) {
 
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
-
+    DrawSky(player,renderer);
     RayCastMatrixMap(renderer, points, player);
     world->draw(renderer);
     player.Show(renderer);
+
     SDL_RenderPresent(renderer);
     SDL_Delay(1000 / 60);
     SDL_RenderClear(renderer);
