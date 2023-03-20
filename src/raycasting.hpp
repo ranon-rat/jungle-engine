@@ -6,16 +6,22 @@
 #include "global.hpp"
 #include "player.hpp"
 
-int texture1[TEXTURE_HEIGHT*TEXTURE_WIDTH] = {
-    2, 2, 2, 2, 1, 1, 1, 1, 
-    2, 2, 2, 2, 1, 1, 1, 1,
-    2, 2, 2, 2, 1, 1, 1, 1, 
-    2, 2, 2, 2, 1, 1, 1, 1,
-    1, 1, 1, 1, 2, 2, 2, 2, 
-    1, 1, 1, 1, 2, 2, 2, 2,
-    1, 1, 1, 1, 2, 2, 2, 2, 
-    1, 1, 1, 1, 2, 2, 2, 2,
+int texture1[TEXTURE_HEIGHT * TEXTURE_WIDTH] = {
+    2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1,
+    1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1,
+    2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2,
 };
+int texture2[TEXTURE_HEIGHT * TEXTURE_WIDTH] = {
+    2, 2, 1, 1, 2, 2, 1, 1,
+    2, 2, 1, 1, 2, 2, 1, 1, 
+    1, 1, 2, 2, 1, 1,2, 2, 
+    1, 1, 2, 2, 1, 1,2, 2, 
+    2, 2, 1, 1, 2, 2, 1, 1,
+    2, 2, 1, 1,2, 2, 1, 1,
+    1, 1, 2, 2,1, 1, 2, 2,
+    1,1, 2, 2, 1, 1, 2, 2,
+};
+
 // this is a more kind of wolfestein 3d style
 struct Square {
   float x;
@@ -40,5 +46,5 @@ void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
                  SDL_Renderer *renderer);
 void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
                        SDL_Color color,
-                       int texture[TEXTURE_HEIGHT*TEXTURE_WIDTH],
+                       int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
                        SDL_Renderer *renderer);

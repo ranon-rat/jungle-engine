@@ -46,7 +46,7 @@ void Player::Move(SDL_Event event) {
 void Player::Show(SDL_Renderer *renderer) {
   // SDL2 Not supports circles
   SDL_Rect rect = {(int)this->x * 10 - 5, (int)this->y * 10 - 5, 10, 10};
-  SDL_Color color = {100, 0, 0, 100};
+  SDL_Color color = {100, 100, 0, 100};
   SDL_RenderFillRect(renderer, &rect);
 }
 

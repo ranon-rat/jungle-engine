@@ -23,11 +23,13 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
       return;
     }
     SDL_Color color;
+    int texture[TEXTURE_HEIGHT*TEXTURE_WIDTH];
     switch (inter.kind) {
       case 1:
         color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
                        ((inter.side) ? 2 : 1)),
                  0, 0, 255};
+        std::memcpy(texture,texture1,sizeof(texture));
         break;
 
       case 2:
@@ -35,6 +37,8 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                  Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
                        ((inter.side) ? 2 : 1)),
                  255};
+                std::memcpy(texture,texture2,sizeof(texture));
+
         break;
 
       case 3:
@@ -45,6 +49,8 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                  Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
                        ((inter.side) ? 2 : 1)),
                  255};
+                                 std::memcpy(texture,texture1,sizeof(texture));
+
         break;
 
       case 4:
@@ -53,10 +59,14 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                  Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
                        ((inter.side) ? 2 : 1)),
                  0, 255};
+                                                  std::memcpy(texture,texture2,sizeof(texture));
+
         break;
 
       default:
         color = {100, 100, 100, 255};
+                                         std::memcpy(texture,texture1,sizeof(texture));
+
         break;
     }
     float height =
@@ -64,10 +74,10 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
     float y0 = 0.5 * (HEIGHT - height);
     float y1 = 0.5 * (HEIGHT + height);
     if (inter.side)
-      DrawTextureSquare(inter.y, inter.yc, y0, y1, xw, color, texture1,
+      DrawTextureSquare(inter.y, inter.yc, y0, y1, xw, color, texture,
                         renderer);
     else
-      DrawTextureSquare(inter.x, inter.xc, y0, y1, xw, color, texture1,
+      DrawTextureSquare(inter.x, inter.xc, y0, y1, xw, color, texture,
                         renderer);
   }
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
