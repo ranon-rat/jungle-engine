@@ -6,12 +6,10 @@
 #include "global.hpp"
 #include "player.hpp"
 
-
 float Dis(float x1, float y1, float x2, float y2);
 void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
                  float start, float end, int xw, SDL_Color color,
                  SDL_Renderer *renderer);
-
 
 // this is a more kind of wolfestein 3d style
 struct Square {

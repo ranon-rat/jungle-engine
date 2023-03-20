@@ -8,7 +8,7 @@ int texture[8][8] = {
 };
 void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
-  float proj_dis = 0.5 * 7 / tan(FOV_HORIZONTAL);
+  float proj_dis = 0.5 * 5 / tan(FOV_HORIZONTAL);
 
   for (float xw = 0; xw <= WIDTH; xw++) {
     float alpha = FOV_HORIZONTAL * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)) +

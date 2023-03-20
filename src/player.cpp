@@ -23,10 +23,12 @@ void Player::Move(SDL_Event event) {
     case SDLK_a:
 
       this->horizontal_angle += RAD;
+
       break;
     case SDLK_d:
 
       this->horizontal_angle -= RAD;
+
       break;
     default:
       break;

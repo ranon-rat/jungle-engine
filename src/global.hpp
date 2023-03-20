@@ -9,4 +9,4 @@
 
 #define WIDTH 1000
 #define HEIGHT 800
-#define FOV_HORIZONTAL 50*0.0174533
+#define FOV_HORIZONTAL 50*RAD
