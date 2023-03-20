@@ -26,28 +26,28 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
     int texture[TEXTURE_HEIGHT*TEXTURE_WIDTH];
     switch (inter.kind) {
       case 1:
-        color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
-                       ((inter.side) ? 2 : 1)),
+        color = {Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
+                       ((inter.side) ? 0.5 : 1)),
                  0, 0, 255};
         std::memcpy(texture,texture1,sizeof(texture));
         break;
 
       case 2:
         color = {0, 0,
-                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
-                       ((inter.side) ? 2 : 1)),
+                 Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
+                       ((inter.side) ? 0.5 : 1)),
                  255};
                 std::memcpy(texture,texture2,sizeof(texture));
 
         break;
 
       case 3:
-        color = {Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
-                       ((inter.side) ? 2 : 1)),
-                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
-                       ((inter.side) ? 2 : 1)),
-                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
-                       ((inter.side) ? 2 : 1)),
+        color = {Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
+                       ((inter.side) ? 0.5 : 1)),
+                 Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
+                       ((inter.side) ? 0.5 : 1)),
+                 Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
+                       ((inter.side) ? 0.5 : 1)),
                  255};
                                  std::memcpy(texture,texture1,sizeof(texture));
 
@@ -56,8 +56,8 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
       case 4:
 
         color = {0,
-                 Uint8(100 * (1 - inter.dis / MAX_RENDER_DISTANCE) /
-                       ((inter.side) ? 2 : 1)),
+                 Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
+                       ((inter.side) ? 0.5 : 1)),
                  0, 255};
                                                   std::memcpy(texture,texture2,sizeof(texture));
 
@@ -197,9 +197,7 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
       tileFound = (map1[check_ray_y][check_ray_x] > 0);
     }
   }
-  if (!tileFound) {
-    dis = MAX_RENDER_DISTANCE;
-  }
+
 
   y_ray_intersection = origin_y + sin(alpha) * dis;
   x_ray_intersection = origin_x + cos(alpha) * dis;
