@@ -81,15 +81,10 @@ void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
   // idk
   float i = (Dis(x1, y1, xi, yi) / wallLength) * 7;
   int *column = texture[(int)i];
-  for (int u = start; u < end; u++) {
+  for (int u = fmax(start,0); u < fmin(end,HEIGHT); u++) {
     int v = (u - start) / abs(end - start) * 7;
     int p = column[v];
-    if (u < 0) {
-      continue;
-    }
-    if (u > HEIGHT - 1) {
-      break;
-    }
+
     SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
                            color.a * p);
 
