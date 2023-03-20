@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
 
-    player.RayCast(renderer, points);
+    RayCastMatrixMap(renderer, points, player);
     world->draw(renderer);
     player.Show(renderer);
     SDL_RenderPresent(renderer);
