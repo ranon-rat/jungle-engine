@@ -1,11 +1,8 @@
 
 #include "raycasting.hpp"
-int texture[8][8] = {
-    {2, 2, 2, 2, 1, 1, 1, 1}, {2, 2, 2, 2, 1, 1, 1, 1},
-    {2, 2, 2, 2, 1, 1, 1, 1}, {2, 2, 2, 2, 1, 1, 1, 1},
-    {1, 1, 1, 1, 2, 2, 2, 2}, {1, 1, 1, 1, 2, 2, 2, 2},
-    {1, 1, 1, 1, 2, 2, 2, 2}, {1, 1, 1, 1, 2, 2, 2, 2},
-};
+
+#include <cstring>
+
 int sky[8][8] = {
     {0, 1, 2, 3, 0, 1, 2, 3}, {0, 1, 2, 3, 0, 1, 2, 3},
     {0, 1, 2, 3, 0, 1, 2, 3}, {0, 1, 2, 3, 0, 1, 2, 3},
@@ -25,8 +22,6 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
     if (inter.kind == 0) {
       return;
     }
-
-    // sf::Color color;
     SDL_Color color;
     switch (inter.kind) {
       case 1:
@@ -68,11 +63,12 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
         (HEIGHT * proj_dis / (inter.dis * cos(alpha - p.horizontal_angle)));
     float y0 = 0.5 * (HEIGHT - height);
     float y1 = 0.5 * (HEIGHT + height);
-    std::cout<<inter.x<<" "<<inter.y<<"\n";
     if (inter.side)
-      DrawTextureSquare(inter.y,inter.yc,  y0, y1, xw, color, renderer);
+      DrawTextureSquare(inter.y, inter.yc, y0, y1, xw, color, texture1,
+                        renderer);
     else
-      DrawTextureSquare( inter.x,inter.xc,   y0, y1, xw, color, renderer);
+      DrawTextureSquare(inter.x, inter.xc, y0, y1, xw, color, texture1,
+                        renderer);
   }
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
 }
@@ -86,17 +82,14 @@ void DrawSky(int xw, float alpha, SDL_Renderer *renderer) {
   // before doing the raycasting
 }
 
-void DrawTextureSquare(float xi,float x0 ,float start,
-                           float end, int xw, SDL_Color color,
-                           SDL_Renderer *renderer) {
-                                std::cout<<xi<<" horizontal"<<"\n";
-
-  float i = (abs(xi-x0) * 7);
-    std::cout<<xi<<" horizontal"<<"\n";
-  int *column = texture[(int)i];
+void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
+                       SDL_Color color,
+                       int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
+                       SDL_Renderer *renderer) {
+  int i = (abs(xi - x0) * 8);
   for (int u = fmax(start, 0); u < fmin(end, HEIGHT); u++) {
-    int v = (u - start) / abs(end - start) * 7;
-    int p = column[v];
+    int v = (u - start) / abs(end - start) * 8;
+    int p = texture[v * TEXTURE_WIDTH + i];
 
     SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
                            color.a * p);
@@ -110,17 +103,15 @@ void DrawTextureSquare(float xi,float x0 ,float start,
 // start and end are the y coordinates on the screen to draw the texture
 // same for xw but its the x coordinate of the screen
 
-
 void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
                  float start, float end, int xw, SDL_Color color,
                  SDL_Renderer *renderer) {
   float wallLength = Dis(x1, y1, x2, y2);
   // idk
-  float i = (Dis(x1, y1, xi, yi)/wallLength) * 7;
-  int *column = texture[(int)i];
+  int i = (Dis(x1, y1, xi, yi) / wallLength) * 7;
   for (int u = fmax(start, 0); u < fmin(end, HEIGHT); u++) {
     int v = (u - start) / abs(end - start) * 7;
-    int p = column[v];
+    int p = texture1[v * TEXTURE_WIDTH + i];
 
     SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
                            color.a * p);

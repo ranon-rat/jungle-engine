@@ -11,3 +11,6 @@
 #define HEIGHT 800
 #define FOV_HORIZONTAL 50*RAD
 #define FOV_VERTICAL 58*RAD
+
+#define TEXTURE_HEIGHT 8
+#define TEXTURE_WIDTH 8 
