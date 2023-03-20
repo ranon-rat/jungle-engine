@@ -1,7 +1,9 @@
 
 #include "raycasting.hpp"
-#include "texture.hpp"
+
 #include <cstring>
+
+#include "texture.hpp"
 
 int sky[8 * 8] = {
     0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
@@ -17,12 +19,18 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                   p.horizontal_angle;
 
     Square inter = IntersectDDA(p.x, p.y, alpha, points);
+    // so i need to know if i have intersect to something
+    // so i use this property for that
     if (!inter.found) continue;
+    // i use the distance for calculating the brightness, obviously i use fmin
+    // because the distance can be bigger than the max_render_distance so yeah
     float brightness =
         (1 - fmin(inter.dis, MAX_RENDER_DISTANCE) / (MAX_RENDER_DISTANCE)) *
         ((inter.side) ? 0.5 : 1);
-    SDL_Color color;
+
     int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH];
+
+    SDL_Color color;
     switch (inter.kind) {
       case 1:
         color = {Uint8(70 * brightness), 0, 0, 255};
@@ -37,7 +45,7 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
 
       case 3:
         color = {Uint8(70 * brightness), Uint8(70 * brightness),
-                 Uint8(50 * brightness), 255};
+                 Uint8(70 * brightness), 255};
         std::memcpy(texture, texture1, sizeof(texture));
 
         break;
@@ -50,7 +58,7 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
         break;
 
       default:
-        color = {Uint8(70*brightness), 0, Uint8(70*brightness), 255};
+        color = {Uint8(70 * brightness), 0, Uint8(70 * brightness), 255};
         std::memcpy(texture, texture1, sizeof(texture));
 
         break;
@@ -84,9 +92,12 @@ void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
                        int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
                        SDL_Renderer *renderer) {
   int i = (abs(xi - x0) * 8);
+  // just use the distance from point b to point a, but is just a square so i
+  // dont need to do that much so yeah
   for (int u = fmax(start, 0); u < fmin(end, HEIGHT); u++) {
     int v = (u - start) / abs(end - start) * 8;
     int p = texture[v * TEXTURE_WIDTH + i];
+    // it works the same as the other
 
     SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
                            color.a * p);
@@ -134,7 +145,8 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
 
   // this will be used for knowing the line size depending of wich direction we
   // are using
-
+  // with this i get the distance of each square using the rect
+  // so this is really useful
   double x_unit = (cos(alpha) == 0)
                       ? 1
                       : std::abs(1 / cos(alpha));  // sqrt(1+tan(alpha)^2);
@@ -184,7 +196,9 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
       tileFound = (map1[check_ray_y][check_ray_x] > 0);
     }
   }
-
+// is just a basic vector
+// i just need to know the angle and how big it is
+// and i know it so i dont need to much
   y_ray_intersection = origin_y + sin(alpha) * dis;
   x_ray_intersection = origin_x + cos(alpha) * dis;
 
