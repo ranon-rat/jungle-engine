@@ -6,21 +6,7 @@
 #include "global.hpp"
 #include "player.hpp"
 
-int texture1[TEXTURE_HEIGHT * TEXTURE_WIDTH] = {
-    2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1,
-    1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1,
-    2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2,
-};
-int texture2[TEXTURE_HEIGHT * TEXTURE_WIDTH] = {
-    2, 2, 1, 1, 2, 2, 1, 1,
-    2, 2, 1, 1, 2, 2, 1, 1, 
-    1, 1, 2, 2, 1, 1,2, 2, 
-    1, 1, 2, 2, 1, 1,2, 2, 
-    2, 2, 1, 1, 2, 2, 1, 1,
-    2, 2, 1, 1,2, 2, 1, 1,
-    1, 1, 2, 2,1, 1, 2, 2,
-    1,1, 2, 2, 1, 1, 2, 2,
-};
+
 
 // this is a more kind of wolfestein 3d style
 struct Square {
@@ -32,6 +18,7 @@ struct Square {
   float dis;
   int kind;
   bool side;
+  bool found;
 };
 
 void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
@@ -40,7 +27,7 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
 Square IntersectDDA(float origin_x, float origin_y, float alpha,
                     int map1[MAP_HEIGHT][MAP_WIDTH]);
 
-float Dis(float x1, float y1, float x2, float y2s);
+float Dis(float x1, float y1, float x2, float y2);
 void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
                  float start, float end, int xw, SDL_Color color,
                  SDL_Renderer *renderer);

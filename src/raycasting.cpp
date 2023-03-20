@@ -1,13 +1,12 @@
 
 #include "raycasting.hpp"
-
+#include "texture.hpp"
 #include <cstring>
 
-int sky[8*8] = {
-    0, 1, 2, 3, 0, 1, 2, 3,0, 1, 2, 3, 0, 1, 2, 3,
-    0, 1, 2, 3, 0, 1, 2, 3,0, 1, 2, 3, 0, 1, 2, 3,
-    0, 1, 2, 3, 0, 1, 2, 3,0, 1, 2, 3, 0, 1, 2, 3,
-    0, 1, 2, 3, 0, 1, 2, 3,0, 1, 2, 3, 0, 1, 2, 3,
+int sky[8 * 8] = {
+    0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
+    2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+    0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
 };
 void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
@@ -18,54 +17,41 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                   p.horizontal_angle;
 
     Square inter = IntersectDDA(p.x, p.y, alpha, points);
-
-    if (inter.kind == 0) {
-      return;
-    }
+    if (!inter.found) continue;
+    float brightness =
+        (1 - fmin(inter.dis, MAX_RENDER_DISTANCE) / (MAX_RENDER_DISTANCE)) *
+        ((inter.side) ? 0.5 : 1);
     SDL_Color color;
-    int texture[TEXTURE_HEIGHT*TEXTURE_WIDTH];
+    int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH];
     switch (inter.kind) {
       case 1:
-        color = {Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
-                       ((inter.side) ? 0.5 : 1)),
-                 0, 0, 255};
-        std::memcpy(texture,texture1,sizeof(texture));
+        color = {Uint8(70 * brightness), 0, 0, 255};
+        std::memcpy(texture, texture1, sizeof(texture));
         break;
 
       case 2:
-        color = {0, 0,
-                 Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
-                       ((inter.side) ? 0.5 : 1)),
-                 255};
-                std::memcpy(texture,texture2,sizeof(texture));
+        color = {0, 0, Uint8(70 * brightness), 255};
+        std::memcpy(texture, texture2, sizeof(texture));
 
         break;
 
       case 3:
-        color = {Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
-                       ((inter.side) ? 0.5 : 1)),
-                 Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
-                       ((inter.side) ? 0.5 : 1)),
-                 Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
-                       ((inter.side) ? 0.5 : 1)),
-                 255};
-                                 std::memcpy(texture,texture1,sizeof(texture));
+        color = {Uint8(70 * brightness), Uint8(70 * brightness),
+                 Uint8(50 * brightness), 255};
+        std::memcpy(texture, texture1, sizeof(texture));
 
         break;
 
       case 4:
 
-        color = {0,
-                 Uint8(100 * (1 - inter.dis / (MAX_RENDER_DISTANCE+1)) *
-                       ((inter.side) ? 0.5 : 1)),
-                 0, 255};
-                                                  std::memcpy(texture,texture2,sizeof(texture));
+        color = {0, Uint8(70 * brightness), 0, 255};
+        std::memcpy(texture, texture2, sizeof(texture));
 
         break;
 
       default:
-        color = {100, 100, 100, 255};
-                                         std::memcpy(texture,texture1,sizeof(texture));
+        color = {Uint8(70*brightness), 0, Uint8(70*brightness), 255};
+        std::memcpy(texture, texture1, sizeof(texture));
 
         break;
     }
@@ -80,7 +66,8 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
       DrawTextureSquare(inter.x, inter.xc, y0, y1, xw, color, texture,
                         renderer);
   }
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
+
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
 }
 
 void DrawSky(int xw, float alpha, SDL_Renderer *renderer) {
@@ -198,7 +185,6 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
     }
   }
 
-
   y_ray_intersection = origin_y + sin(alpha) * dis;
   x_ray_intersection = origin_x + cos(alpha) * dis;
 
@@ -210,6 +196,7 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
       .dis = dis,
       .kind = map1[check_ray_y][check_ray_x],
       .side = side,
+      .found = tileFound,
 
   };
 }
