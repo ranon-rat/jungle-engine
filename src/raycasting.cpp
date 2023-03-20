@@ -68,23 +68,42 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
         (HEIGHT * proj_dis / (inter.dis * cos(alpha - p.horizontal_angle)));
     float y0 = 0.5 * (HEIGHT - height);
     float y1 = 0.5 * (HEIGHT + height);
-
-    DrawTexture(inter.x, inter.y, inter.xc, inter.yc, (inter.xc + 1),
-                (inter.yc + 1), y0, y1, xw, color, renderer);
+    std::cout<<inter.x<<" "<<inter.y<<"\n";
+    if (inter.side)
+      DrawTextureSquare(inter.y,inter.yc,  y0, y1, xw, color, renderer);
+    else
+      DrawTextureSquare( inter.x,inter.xc,   y0, y1, xw, color, renderer);
   }
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
 }
 
-void DrawSky(int xw,float alpha ,  SDL_Renderer *renderer){
-
+void DrawSky(int xw, float alpha, SDL_Renderer *renderer) {
   // for drawing the sky we only need to do the next
   // we get the angle that we are seeing
   // we get the column
   // then we draw it
   // the sky needs to be draw first
   // before doing the raycasting
-
 }
+
+void DrawTextureSquare(float xi,float x0 ,float start,
+                           float end, int xw, SDL_Color color,
+                           SDL_Renderer *renderer) {
+                                std::cout<<xi<<" horizontal"<<"\n";
+
+  float i = (abs(xi-x0) * 7);
+    std::cout<<xi<<" horizontal"<<"\n";
+  int *column = texture[(int)i];
+  for (int u = fmax(start, 0); u < fmin(end, HEIGHT); u++) {
+    int v = (u - start) / abs(end - start) * 7;
+    int p = column[v];
+
+    SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
+                           color.a * p);
+    SDL_RenderDrawPoint(renderer, xw, u);
+  }
+}
+
 // xi and yi are the coordinates of intersection
 // x1,y1 are the starting point of the polygon, lets call it a
 // x2,y2 are the end point of the polygon lets call it b
@@ -97,7 +116,7 @@ void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
                  SDL_Renderer *renderer) {
   float wallLength = Dis(x1, y1, x2, y2);
   // idk
-  float i = (Dis(x1, y1, xi, yi) / wallLength) * 7;
+  float i = (Dis(x1, y1, xi, yi)/wallLength) * 7;
   int *column = texture[(int)i];
   for (int u = fmax(start, 0); u < fmin(end, HEIGHT); u++) {
     int v = (u - start) / abs(end - start) * 7;
