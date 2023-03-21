@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "headers/global.hpp"
+#include "global.hpp"
 
 using namespace std;
 

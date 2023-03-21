@@ -9,11 +9,9 @@
 void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
   float proj_dis = 0.5 * 5 / tan(FOV_VERTICAL);
-  float inv_render_dis=1/MAX_RENDER_DISTANCE;
-
 
   for (float xw = 0; xw <= WIDTH; xw++) {
-    float alpha = FOV_HORIZONTAL * ((0.5 * WIDTH - xw)/(WIDTH-1)) +
+    float alpha = FOV_HORIZONTAL * (floor(0.5 * WIDTH - xw) / (WIDTH - 1)) +
                   p.horizontal_angle;
 
     Square inter = IntersectDDA(p.x, p.y, alpha, points);
@@ -23,7 +21,7 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
     // i use the distance for calculating the brightness, obviously i use fmin
     // because the distance can be bigger than the max_render_distance so yeah
     float brightness =
-        (1 - fmin(inter.dis, MAX_RENDER_DISTANCE) *inv_render_dis) *
+        (1 - fmin(inter.dis, MAX_RENDER_DISTANCE) / (MAX_RENDER_DISTANCE)) *
         ((inter.side) ? 0.5 : 1);
 
     int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH];
@@ -65,7 +63,6 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
         (HEIGHT * proj_dis / (inter.dis * cos(alpha - p.horizontal_angle)));
     float start = 0.5 * (HEIGHT - height);
     float end = 0.5 * (HEIGHT + height);
-   // DrawSky(xw,alpha,renderer);
     if (inter.side)
       DrawTextureSquare(inter.y, inter.yc, start,end, xw, color, texture,
                         renderer);
@@ -77,9 +74,70 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
 }
 
+void DrawSky(Player player, SDL_Renderer *renderer) {
+  for (int y = 0; y < HEIGHT; y++) {
+    int u = int((float(y) / HEIGHT) * SKY_HEIGHT);
+
+    for (int x = 0; x < WIDTH; x++) {
+     int xo =int(SKY_WIDTH* ((player.horizontal_angle*DEG) * 3 - float(x))*MAXANG*0.3333333);
+      if (xo < 0) xo += SKY_WIDTH;
 
 
+      int p = sky[u * SKY_WIDTH + (xo)%SKY_WIDTH];
+      // it works the same as the other
+      SDL_SetRenderDrawColor(renderer, 20 * p, 0, 20 * p, 255);
+      SDL_RenderDrawPoint(renderer, x, y);
+    }
+  }
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
+  // for drawing the sky we only need to do the next
+  // we get the angle that we are seeing
+  // we get the column
+  // then we draw it
+  // the sky needs to be draw first
+  // before doing the raycasting
+}
 
+void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
+                       SDL_Color color,
+                       int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
+                       SDL_Renderer *renderer) {
+  int i = ((xi - x0) * 8);
+  // just use the distance from point b to point a, but is just a square so i
+  // dont need to do that much so yeah
+  for (int u = fmax(start, 0); u < fmin(end, HEIGHT); u++) {
+    int v = (u - start) / abs(end - start) * 8;
+    int p = texture[v * TEXTURE_WIDTH + i];
+    // it works the same as the other
+
+    SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
+                          color.a);
+    SDL_RenderDrawPoint(renderer, xw, u);
+  }
+}
+
+// xi and yi are the coordinates of intersection
+// x1,y1 are the starting point of the polygon, lets call it a
+// x2,y2 are the end point of the polygon lets call it b
+// start and end are the y coordinates on the screen to draw the texture
+// same for xw but its the x coordinate of the screen
+
+void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
+                 float start, float end, int xw, SDL_Color color,
+                 SDL_Renderer *renderer) {
+  float wallLength = Dis(x1, y1, x2, y2);
+  // idk
+  int i = (Dis(x1, y1, xi, yi) / wallLength) * 7;
+  for (int u = fmax(start, 0); u < fmin(end, HEIGHT); u++) {
+    int v = (u - start) / abs(end - start) * 7;
+    int p = texture1[v * TEXTURE_WIDTH + i];
+
+    SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
+                         color.a);
+
+    SDL_RenderDrawPoint(renderer, xw, u);
+  }
+};
 
 float Dis(float x1, float y1, float x2, float y2) {
   return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -93,7 +151,8 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
   float ray_x = origin_x;
   float ray_y = origin_y;
   // points of intersection
-
+  float y_ray_intersection;
+  float x_ray_intersection;
 
   // this will be used for knowing the line size depending of wich direction we
   // are using
@@ -151,8 +210,8 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
   // is just a basic vector
   // i just need to know the angle and how big it is
   // and i know it so i dont need to much
-  float y_ray_intersection = origin_y + sin(alpha) * dis;
-  float x_ray_intersection = origin_x + cos(alpha) * dis;
+  y_ray_intersection = origin_y + sin(alpha) * dis;
+  x_ray_intersection = origin_x + cos(alpha) * dis;
 
   return Square{
       .x = x_ray_intersection,
@@ -165,73 +224,4 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
       .found = tileFound,
 
   };
-}
-
-void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
-                       SDL_Color color,
-                       int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
-                       SDL_Renderer *renderer) {
-  int i = ((xi - x0) * 8);
-  // just use the distance from point b to point a, but is just a square so i
-  // dont need to do that much so yeah
-  float inv=1/(end-start);
-  int uend= fmin(end, HEIGHT);
-  for (int u = fmax(start, 0); u < uend; u++) {
-    int v = (u - start)*inv * 8;
-    int p = texture[v * TEXTURE_WIDTH + i];
-    // it works the same as the other
-
-    SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
-                          color.a);
-    SDL_RenderDrawPoint(renderer, xw, u);
-  }
-}
-
-// xi and yi are the coordinates of intersection
-// x1,y1 are the starting point of the polygon, lets call it a
-// x2,y2 are the end point of the polygon lets call it b
-// start and end are the y coordinates on the screen to draw the texture
-// same for xw but its the x coordinate of the screen
-
-void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
-                 float start, float end, int xw, SDL_Color color,
-                 SDL_Renderer *renderer) {
-  float wallLength = Dis(x1, y1, x2, y2);
-  // idk
-  int i = (Dis(x1, y1, xi, yi) / wallLength) * 7;
-    int uend=fmin(end, HEIGHT);
-
-  for (int u = fmax(start, 0); u < uend; u++) {
-    int v = (u - start) / (end - start) * 7;
-    int p = texture1[v * TEXTURE_WIDTH + i];
-
-    SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
-                         color.a);
-
-    SDL_RenderDrawPoint(renderer, xw, u);
-  }
-};
-
-void DrawSky(int xw,float alpha, SDL_Renderer *renderer) {
-  for (int y = 0; y < HEIGHT; y++) {
-    int u = int((float(y) / HEIGHT) * SKY_HEIGHT);
-
-     int xo =((SKY_WIDTH-1)* (alpha*DEG*3 - float(xw))*MAXANG*0.3333333);
-      if (xo < 0) xo += (SKY_WIDTH-1);
-      if(xo>(SKY_WIDTH-1))xo=fmod(xo,(SKY_WIDTH-1));
-
-
-      int p = sky[u * SKY_WIDTH + (xo)];
-      // it works the same as the other
-      SDL_SetRenderDrawColor(renderer, 20 * p, 0, 20 * p, 255);
-      SDL_RenderDrawPoint(renderer, xw, y);
-    
-  }
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-  // for drawing the sky we only need to do the next
-  // we get the angle that we are seeing
-  // we get the column
-  // then we draw it
-  // the sky needs to be draw first
-  // before doing the raycasting
 }
