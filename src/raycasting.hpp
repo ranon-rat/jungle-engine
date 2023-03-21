@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "global.hpp"
+#include "headers/global.hpp"
 #include "player.hpp"
 
 
@@ -35,4 +35,4 @@ void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
                        int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
                        SDL_Renderer *renderer);
 
-void DrawSky(Player player, SDL_Renderer *renderer);
+void DrawSky(int xw,float alpha, SDL_Renderer *renderer);

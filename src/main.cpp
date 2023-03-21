@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "global.hpp"
+#include "headers/global.hpp"
 #include "map.hpp"
 #include "player.hpp"
 #include "raycasting.hpp"
@@ -72,14 +72,15 @@ int main(int argc, char *argv[]) {
 
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
-    DrawSky(player,renderer);
     RayCastMatrixMap(renderer, points, player);
     world->draw(renderer);
     player.Show(renderer);
+      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
     SDL_RenderPresent(renderer);
     SDL_Delay(1000 / 60);
     SDL_RenderClear(renderer);
+
   }
 
   SDL_DestroyRenderer(renderer);

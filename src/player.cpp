@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include "global.hpp"
+#include "headers/global.hpp"
 
 void Player::Move(SDL_Event event) {
   if (event.type != SDL_KEYDOWN) return;

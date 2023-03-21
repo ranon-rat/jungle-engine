@@ -3,7 +3,8 @@
 
 #include <iostream>
 
-#include "global.hpp"
+#include "headers/global.hpp"
+
 #include "map.hpp"
 
 struct Sector {};
