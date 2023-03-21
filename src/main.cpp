@@ -72,7 +72,6 @@ int main(int argc, char *argv[]) {
 
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
-    DrawSky(player,renderer);
     RayCastMatrixMap(renderer, points, player);
     world->draw(renderer);
     player.Show(renderer);

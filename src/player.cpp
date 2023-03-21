@@ -7,6 +7,7 @@
 
 #include "global.hpp"
 
+
 void Player::Move(SDL_Event event) {
   if (event.type != SDL_KEYDOWN) return;
   switch (event.key.keysym.sym) {
@@ -46,8 +47,6 @@ void Player::Show(SDL_Renderer *renderer) {
   // SDL2 Not supports circles
   SDL_Rect rect = {(int)this->x * 10 - 5, (int)this->y * 10 - 5, 10, 10};
   SDL_Color color = {100, 100, 0, 100};
-  SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
   SDL_RenderFillRect(renderer, &rect);
 }
 
@@ -55,3 +54,5 @@ void Player::SetPos(float i_x, float i_y) {
   x = i_x + .5;
   y = i_y + 0.5;
 }
+
+  
