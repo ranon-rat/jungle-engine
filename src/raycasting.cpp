@@ -79,7 +79,7 @@ void DrawSky(Player player, SDL_Renderer *renderer) {
     int u = int((float(y) / HEIGHT) * SKY_HEIGHT);
 
     for (int x = 0; x < WIDTH; x++) {
-     int xo =SKY_WIDTH* ((player.horizontal_angle / RAD) * 3 - float(x))/(360*3);
+     int xo =int(SKY_WIDTH* ((player.horizontal_angle / RAD) * 3 - float(x))/(360*3));
       if (xo < 0) xo += SKY_WIDTH;
 
 
@@ -111,7 +111,7 @@ void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
     // it works the same as the other
 
     SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
-                           color.a * p);
+                          color.a);
     SDL_RenderDrawPoint(renderer, xw, u);
   }
 }
@@ -133,7 +133,7 @@ void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
     int p = texture1[v * TEXTURE_WIDTH + i];
 
     SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
-                           color.a * p);
+                         color.a);
 
     SDL_RenderDrawPoint(renderer, xw, u);
   }
