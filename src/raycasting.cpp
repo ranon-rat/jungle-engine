@@ -2,14 +2,10 @@
 #include "raycasting.hpp"
 
 #include <cstring>
-
 #include "texture.hpp"
 
-int sky[8 * 8] = {
-    0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
-    2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-    0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-};
+
+
 void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
   float proj_dis = 0.5 * 5 / tan(FOV_VERTICAL);
@@ -83,12 +79,11 @@ void DrawSky(Player player, SDL_Renderer *renderer) {
     int u = int((float(y) / HEIGHT) * SKY_HEIGHT);
 
     for (int x = 0; x < WIDTH; x++) {
-      float xo =SKY_WIDTH* ((player.horizontal_angle / RAD) * 3 - float(x))/(360*3);
+     int xo =SKY_WIDTH* ((player.horizontal_angle / RAD) * 3 - float(x))/(360*3);
       if (xo < 0) xo += SKY_WIDTH;
 
-      if (xo >= SKY_WIDTH) xo = fmod(xo, SKY_WIDTH);
 
-      int p = sky[u * SKY_WIDTH + (int)xo];
+      int p = sky[u * SKY_WIDTH + (xo)%SKY_WIDTH];
       // it works the same as the other
       SDL_SetRenderDrawColor(renderer, 20 * p, 0, 20 * p, 255);
       SDL_RenderDrawPoint(renderer, x, y);

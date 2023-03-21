@@ -7,7 +7,6 @@
 #include "player.hpp"
 
 
-
 // this is a more kind of wolfestein 3d style
 struct Square {
   float x;
