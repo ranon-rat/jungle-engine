@@ -35,19 +35,21 @@ void Player::Move(SDL_Event event) {
   }
 
   if (horizontal_angle < 0) {
-    horizontal_angle = TAU - RAD;
+    horizontal_angle += TAU ;
   }
 
-  if (horizontal_angle > TAU) {
-    horizontal_angle -= TAU;
+  if (horizontal_angle >= TAU) {
+    horizontal_angle = fmod(horizontal_angle,TAU);
   }
 }
 
 void Player::Show(SDL_Renderer *renderer) {
   // SDL2 Not supports circles
   SDL_Rect rect = {(int)this->x * 10 - 5, (int)this->y * 10 - 5, 10, 10};
-  SDL_Color color = {100, 100, 0, 100};
-  SDL_RenderFillRect(renderer, &rect);
+  SDL_Color color = {100, 0, 0, 100};
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+  SDL_RenderDrawRect(renderer,&rect);
+
 }
 
 void Player::SetPos(float i_x, float i_y) {

@@ -5,8 +5,7 @@
 #include "texture.hpp"
 
 
-
-void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
+void RayCastMatrixMapWalls(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],int floor[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
   float proj_dis = 0.5 * 5 / tan(FOV_VERTICAL);
   float inv_render_dis=1/MAX_RENDER_DISTANCE;
@@ -16,20 +15,21 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
     float alpha = FOV_HORIZONTAL * ((0.5 * WIDTH - xw)/(WIDTH-1)) +
                   p.horizontal_angle;
 
-    Square inter = IntersectDDA(p.x, p.y, alpha, points);
+    Square interWalls = IntersectDDA(p.x, p.y, alpha, walls);
+    
     // so i need to know if i have intersect to something
     // so i use this property for that
-    if (!inter.found) continue;
+    if (!interWalls.found) continue;
     // i use the distance for calculating the brightness, obviously i use fmin
     // because the distance can be bigger than the max_render_distance so yeah
     float brightness =
-        (1 - fmin(inter.dis, MAX_RENDER_DISTANCE) *inv_render_dis) *
-        ((inter.side) ? 0.5 : 1);
+        (1 - fmin(interWalls.dis, MAX_RENDER_DISTANCE) *inv_render_dis) *
+        ((interWalls.side) ? 0.5 : 1);
 
     int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH];
 
     SDL_Color color;
-    switch (inter.kind) {
+    switch (interWalls.kind) {
       case 1:
         color = {Uint8(70 * brightness), 0, 0, 255};
         std::memcpy(texture, texture1, sizeof(texture));
@@ -62,15 +62,15 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int points[MAP_HEIGHT][MAP_WIDTH],
         break;
     }
     float height =
-        (HEIGHT * proj_dis / (inter.dis * cos(alpha - p.horizontal_angle)));
+        (HEIGHT * proj_dis / (interWalls.dis * cos(alpha - p.horizontal_angle)));
     float start = 0.5 * (HEIGHT - height);
     float end = 0.5 * (HEIGHT + height);
-    DrawSky(xw,alpha,renderer);
-    if (inter.side)
-      DrawTextureSquare(inter.y, inter.yc, start,end, xw, color, texture,
+    DrawSky(xw,p.horizontal_angle,renderer);
+    if (interWalls.side)
+      DrawTextureSquareWalls(interWalls.y, interWalls.yc, start,end, xw, color, texture,
                         renderer);
     else
-      DrawTextureSquare(inter.x, inter.xc, start, end, xw, color, texture,
+      DrawTextureSquareWalls(interWalls.x, interWalls.xc, start, end, xw, color, texture,
                         renderer);
   }
 
@@ -167,7 +167,7 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
   };
 }
 
-void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
+void DrawTextureSquareWalls(float xi, float x0, float start, float end, int xw,
                        SDL_Color color,
                        int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
                        SDL_Renderer *renderer) {
@@ -193,7 +193,7 @@ void DrawTextureSquare(float xi, float x0, float start, float end, int xw,
 // start and end are the y coordinates on the screen to draw the texture
 // same for xw but its the x coordinate of the screen
 
-void DrawTexture(float xi, float yi, float x1, float y1, float x2, float y2,
+void DrawTextureWalls(float xi, float yi, float x1, float y1, float x2, float y2,
                  float start, float end, int xw, SDL_Color color,
                  SDL_Renderer *renderer) {
   float wallLength = Dis(x1, y1, x2, y2);
@@ -216,9 +216,9 @@ void DrawSky(int xw,float alpha, SDL_Renderer *renderer) {
   for (int y = 0; y < HEIGHT/2; y++) {
     int u = int((float(y) / HEIGHT) * SKY_HEIGHT);
 
-     int xo =((SKY_WIDTH-1)* (alpha*DEG*3 - float(xw))*MAXANG*0.3333333);
+     int xo =((SKY_WIDTH-1)* (alpha*DEG+xw )*MAXANG);
       if (xo < 0) xo += (SKY_WIDTH-1);
-      if(xo>(SKY_WIDTH-1))xo=fmod(xo,(SKY_WIDTH-1));
+      if(xo>=(SKY_WIDTH))xo=xo%(SKY_WIDTH);
 
 
       int p = sky[u * SKY_WIDTH + (xo)];
