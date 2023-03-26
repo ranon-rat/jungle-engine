@@ -5,7 +5,7 @@
 #include "texture.hpp"
 
 
-void RayCastMatrixMapWalls(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],int floor[MAP_HEIGHT][MAP_WIDTH],
+void RayCastMatrixMapWalls(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],int Floor[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
   float proj_dis = 0.5 * 5 / tan(FOV_VERTICAL);
   float inv_render_dis=1/MAX_RENDER_DISTANCE;
@@ -13,7 +13,7 @@ void RayCastMatrixMapWalls(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WID
 
   for (float xw = 0; xw <= WIDTH; xw++) {
     float alpha = FOV_HORIZONTAL * ((0.5 * WIDTH - xw)/(WIDTH-1)) +
-                  p.horizontal_angle;
+                  p.horizontal_angle*RAD;
 
     Square interWalls = IntersectDDA(p.x, p.y, alpha, walls);
     
@@ -60,12 +60,13 @@ void RayCastMatrixMapWalls(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WID
         std::memcpy(texture, texture1, sizeof(texture));
 
         break;
+        
     }
     float height =
-        (HEIGHT * proj_dis / (interWalls.dis * cos(alpha - p.horizontal_angle)));
+        (HEIGHT * proj_dis / (interWalls.dis * cos(alpha - p.horizontal_angle*RAD)));
     float start = 0.5 * (HEIGHT - height);
     float end = 0.5 * (HEIGHT + height);
-    DrawSky(xw,p.horizontal_angle,renderer);
+    DrawSky(start,xw,p.horizontal_angle,renderer);
     if (interWalls.side)
       DrawTextureSquareWalls(interWalls.y, interWalls.yc, start,end, xw, color, texture,
                         renderer);
@@ -73,13 +74,19 @@ void RayCastMatrixMapWalls(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WID
       DrawTextureSquareWalls(interWalls.x, interWalls.xc, start, end, xw, color, texture,
                         renderer);
   }
+ 
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
 
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
 }
 
 
 
-
+void drawTextureSquareFloor(float alpha,float xi,float yi,float start,float end){
+  for(float y=end;y<HEIGHT;y++){
+    float dy=y-(HEIGHT/2);
+    float tx=xi/2+cos(alpha);
+  }
+}
 
 float Dis(float x1, float y1, float x2, float y2) {
   return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -174,10 +181,9 @@ void DrawTextureSquareWalls(float xi, float x0, float start, float end, int xw,
   int i = ((xi - x0) * 8);
   // just use the distance from point b to point a, but is just a square so i
   // dont need to do that much so yeah
-  float inv=1/(end-start);
   int uend= fmin(end, HEIGHT);
   for (int u = fmax(start, 0); u < uend; u++) {
-    int v = (u - start)*inv * 8;
+    int v = (u - start)/(end-start) * 8;
     int p = texture[v * TEXTURE_WIDTH + i];
     // it works the same as the other
 
@@ -212,11 +218,11 @@ void DrawTextureWalls(float xi, float yi, float x1, float y1, float x2, float y2
   }
 };
 
-void DrawSky(int xw,float alpha, SDL_Renderer *renderer) {
-  for (int y = 0; y < HEIGHT/2; y++) {
+void DrawSky(int start,int xw,float alpha, SDL_Renderer *renderer) {
+  for (int y = 0; y < start; y++) {
     int u = int((float(y) / HEIGHT) * SKY_HEIGHT);
 
-     int xo =((SKY_WIDTH-1)* (alpha*DEG+xw )*MAXANG);
+     int xo =((SKY_WIDTH-1)* (alpha+xw )*2/360);
       if (xo < 0) xo += (SKY_WIDTH-1);
       if(xo>=(SKY_WIDTH))xo=xo%(SKY_WIDTH);
 
@@ -227,6 +233,7 @@ void DrawSky(int xw,float alpha, SDL_Renderer *renderer) {
       SDL_RenderDrawPoint(renderer, xw, y);
     
   }
+
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   // for drawing the sky we only need to do the next
   // we get the angle that we are seeing

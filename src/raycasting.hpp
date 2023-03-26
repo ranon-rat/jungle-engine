@@ -35,4 +35,4 @@ void DrawTextureSquareWalls(float xi, float x0, float start, float end, int xw,
                        int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
                        SDL_Renderer *renderer);
 
-void DrawSky(int xw,float alpha, SDL_Renderer *renderer);
+void DrawSky(int start,int xw,float alpha, SDL_Renderer *renderer);

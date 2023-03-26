@@ -12,22 +12,22 @@ void Player::Move(SDL_Event event) {
   if (event.type != SDL_KEYDOWN) return;
   switch (event.key.keysym.sym) {
     case SDLK_w:
-      this->y += sin(horizontal_angle) * 0.1;
-      this->x += cos(horizontal_angle) * 0.1;
+      this->y += sin(horizontal_angle*RAD) * 0.1;
+      this->x += cos(horizontal_angle*RAD) * 0.1;
       break;
     case SDLK_s:
 
-      this->y -= sin(horizontal_angle) * 0.1;
+      this->y -= sin(horizontal_angle*RAD) * 0.1;
       this->x -= cos(horizontal_angle) * 0.1;
       break;
     case SDLK_a:
 
-      this->horizontal_angle += RAD;
+      this->horizontal_angle += 1;
 
       break;
     case SDLK_d:
 
-      this->horizontal_angle -= RAD;
+      this->horizontal_angle -= 1;
 
       break;
     default:
@@ -35,11 +35,11 @@ void Player::Move(SDL_Event event) {
   }
 
   if (horizontal_angle < 0) {
-    horizontal_angle += TAU ;
+    horizontal_angle += 360 ;
   }
 
-  if (horizontal_angle >= TAU) {
-    horizontal_angle = fmod(horizontal_angle,TAU);
+  if (horizontal_angle > 360) {
+    horizontal_angle -=360;
   }
 }
 

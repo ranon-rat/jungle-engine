@@ -9,6 +9,7 @@
 struct Sector {};
 
 class Player {
+
  public:
   float horizontal_angle = 0;
 

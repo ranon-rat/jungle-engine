@@ -18,5 +18,5 @@
 #define TEXTURE_HEIGHT 8
 #define TEXTURE_WIDTH 8 
 
-#define SKY_WIDTH 8 
-#define SKY_HEIGHT 8
+#define SKY_WIDTH 16
+#define SKY_HEIGHT 16
