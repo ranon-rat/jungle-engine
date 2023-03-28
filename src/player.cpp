@@ -30,6 +30,12 @@ void Player::Move(SDL_Event event) {
       this->horizontal_angle -= 1;
 
       break;
+    case SDLK_SPACE:
+    this->z+=1;
+    break;
+    case SDLK_LSHIFT:
+    this->z-=1;
+    break;
     default:
       break;
   }
@@ -38,7 +44,7 @@ void Player::Move(SDL_Event event) {
     horizontal_angle += 360 ;
   }
 
-  if (horizontal_angle > 360) {
+  if (horizontal_angle >= 360) {
     horizontal_angle -=360;
   }
 }

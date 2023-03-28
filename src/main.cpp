@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
-    RayCastMatrixMapWalls(renderer, points,points, player);
+    RayCastMatrixMap(renderer, points,points, player);
     world->draw(renderer);
     player.Show(renderer);
     SDL_SetRenderDrawColor(renderer, 0,0,0, 255);

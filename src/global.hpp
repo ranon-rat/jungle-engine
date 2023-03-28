@@ -12,7 +12,7 @@
 #define HEIGHT 800
 // really importante
 #define FOV_HORIZONTAL 50*RAD
-#define FOV_VERTICAL 58*RAD
+#define FOV_VERTICAL 45*RAD
 
 // texture and sprites
 #define TEXTURE_HEIGHT 8

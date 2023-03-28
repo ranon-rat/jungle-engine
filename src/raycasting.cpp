@@ -5,7 +5,8 @@
 #include "texture.hpp"
 
 
-void RayCastMatrixMapWalls(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],int Floor[MAP_HEIGHT][MAP_WIDTH],
+
+void RayCastMatrixMap(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],int Floor[MAP_HEIGHT][MAP_WIDTH],
                       Player p) {
   float proj_dis = 0.5 * 5 / tan(FOV_VERTICAL);
   float inv_render_dis=1/MAX_RENDER_DISTANCE;
@@ -63,7 +64,7 @@ void RayCastMatrixMapWalls(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WID
         
     }
     float height =
-        (HEIGHT * proj_dis / (interWalls.dis * cos(alpha - p.horizontal_angle*RAD)));
+        (HEIGHT*proj_dis  / (interWalls.dis * cos(alpha - p.horizontal_angle*RAD)));
     float start = 0.5 * (HEIGHT - height);
     float end = 0.5 * (HEIGHT + height);
     DrawSky(start,xw,p.horizontal_angle,renderer);
@@ -220,11 +221,11 @@ void DrawTextureWalls(float xi, float yi, float x1, float y1, float x2, float y2
 
 void DrawSky(int start,int xw,float alpha, SDL_Renderer *renderer) {
   for (int y = 0; y < start; y++) {
-    int u = int((float(y) / HEIGHT) * SKY_HEIGHT);
+    int u = int((float(y) / (HEIGHT) * SKY_HEIGHT));
 
-     int xo =((SKY_WIDTH-1)* (alpha+xw )*2/360);
+     int xo =((SKY_WIDTH-1)* (alpha+xw )*MAXANG);
       if (xo < 0) xo += (SKY_WIDTH-1);
-      if(xo>=(SKY_WIDTH))xo=xo%(SKY_WIDTH);
+      if(xo>(SKY_WIDTH))xo=xo%(SKY_WIDTH-1);
 
 
       int p = sky[u * SKY_WIDTH + (xo)];
