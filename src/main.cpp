@@ -6,6 +6,8 @@
 #include "map.hpp"
 #include "player.hpp"
 #include "raycasting.hpp"
+#include "fps.hpp"
+
 int main(int argc, char *argv[]) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
@@ -64,6 +66,8 @@ int main(int argc, char *argv[]) {
 
   Player player;
 
+  FPSCounter fpsCounter = FPSCounter();
+
   while (done == SDL_FALSE) {
     SDL_Event event;
 
@@ -76,10 +80,12 @@ int main(int argc, char *argv[]) {
     world->draw(renderer);
     player.Show(renderer);
     SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
-
     SDL_RenderPresent(renderer);
-    SDL_Delay(1000 / 60);
+
+    SDL_Delay(1);
+    cout << "FPS:" << fpsCounter.tick() << endl;
     SDL_RenderClear(renderer);
+
   }
 
   SDL_DestroyRenderer(renderer);
