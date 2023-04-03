@@ -19,18 +19,7 @@ struct Square {
   bool side;
   bool found;
 };
-struct WallP{
- int x1;
- int y1;
 
- int x2;
- int y2;
- 
- int base;// the base of the wall
- int top;// the top of the wall
-
-
-};
 
 void RayCastMatrixMap(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],int floor[MAP_HEIGHT][MAP_WIDTH],
                       Player p);

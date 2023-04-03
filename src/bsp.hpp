@@ -2,7 +2,12 @@
 #include <tuple>
 
 #include "player.hpp"
-
+//      0	1	2	3	4
+// 0	1	0	1	0	0
+// 1	0	1	1	0	1
+// 2	1	1	1	1	0
+// 3	0	0	1	1	0
+// 4	0	1	0	0	1
 enum LumpIndices
 {
     THINGS = 1,
@@ -30,7 +35,7 @@ class Thing
     int16_t angle;
     int16_t type;
     int16_t flags;
-}
+};
 
 // Offset	Size (bytes)	C99 type	Description
 // 0	    2	            int16_t     Start Vertex
@@ -49,7 +54,7 @@ class LineDef
     int16_t sector_tag;
     int16_t front_sidedef;
     int16_t back_sidedef;
-}
+};
 
 // Offset	Size (bytes)	C99 type	Description
 // 0	    2	            int16_t     X offset
@@ -67,7 +72,7 @@ class SideDef
     int8_t lower_texture[8];
     int8_t middle_texture[8];
     int16_t sector;
-}
+};
 
 // Offset	Size (bytes)	C99 type	Description
 // 0	    2	            int16_t     X coordinate
@@ -76,7 +81,7 @@ class Vertex
 {
     int16_t x;
     int16_t y;
-}
+};
 
 // Offset	Size (bytes)	C99 type	Description
 // 0	    2	            int16_t     Start Vertex
@@ -93,7 +98,7 @@ class Seg
     int16_t linedef;
     int16_t direction;
     int16_t offset;
-}
+};
 
 // Offset	Size (bytes)	C99 type	Description
 // 0	    2	            int16_t     Seg count
@@ -102,7 +107,7 @@ class SSector
 {
     int16_t seg_count;
     int16_t first_seg;
-}
+};
 
 // Offset	Size (bytes)	C99 type	Description
 // 0	    2	            int16_t     X coordinate of partition line start
@@ -123,7 +128,7 @@ class Node
     int16_t left_bounding_box[4];
     int16_t right_child;
     int16_t left_child;
-}
+};
 
 // Offset	Size (bytes)	C99 type	Description
 // 0	    2	            int16_t     Sector floor height
@@ -142,23 +147,19 @@ class Sector
     int16_t light_level;
     int16_t sector_type;
     int16_t tag;
-}
+};
 
-//      0	1	2	3	4
-// 0	1	0	1	0	0
-// 1	0	1	1	0	1
-// 2	1	1	1	1	0
-// 3	0	0	1	1	0
-// 4	0	1	0	0	1
-typedef uint8_t[5][5] Reject;
+
 
 class BlockMap
 {
 
-}
+};
+typedef std::make_unsigned< char[5][5] >::type Reject;
 
 class WadData
 {
+    
 public:
     vector<Thing> things;
     vector<LineDef> linedefs;
@@ -170,12 +171,12 @@ public:
     vector<Sector> sectors;
     Reject reject;
     BlockMap blockmap;
-}
+};
 
 class BSP
 {
 public:
-    BSP(player::Player& player, WadData wad);
+    BSP(Player& player, WadData wad);
 
 public:
     void render_node(int id);
@@ -184,4 +185,4 @@ public:
 private:
     Player player;
     WadData wad;
-}
+};
