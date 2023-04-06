@@ -6,8 +6,6 @@
 #include "global.hpp"
 #include "map.hpp"
 
-struct Sector {};
-
 class Player {
 
  public:

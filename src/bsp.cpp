@@ -1,7 +1,8 @@
 #include <bsp.hpp>
 
-BSP::BSP(player::Player& player, WadData wad) : player(player), wad(wad) {}
-
+BSP::BSP(Player& player) : player(player) {
+	//loader.LoadWAD("doom1.wad");
+}
 
 void BSP::render_node(int id) {
 	std::cout<<"hello world";
