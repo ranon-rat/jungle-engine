@@ -73,7 +73,7 @@ bool BinarySpacePartitioning::onBackSide(Node *node)
     auto dx = this->player->x - node->x;
     auto dy = this->player->y - node->y;
 
-    return (dx * node.dy - dy * node.dx) <= 0;
+    return (dx * node.dy - dy * node.dx_partition) <= 0;
 }
 
 void BinarySpacePartitioning::renderSubSector(int subSectorId)
