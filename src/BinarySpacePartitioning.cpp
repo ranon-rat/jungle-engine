@@ -60,9 +60,9 @@ int BinarySpacePartitioning::angleToX(float angle)
     {
         x = SCREEN_DIST - tan(angle * M_PI / 180) * WIDTH;
     }
-    else if (angle < 0)
+    else
     {
-        x = SCREEN_DIST - tan(angle * M_PI / 180) * WIDTH;
+        x = -tan(angle * M_PI / 180) * WIDTH + SCREEN_DIST;
     }
 
     return (int)round(x);
@@ -73,7 +73,7 @@ bool BinarySpacePartitioning::onBackSide(Node *node)
     auto dx = this->player->x - node->x;
     auto dy = this->player->y - node->y;
 
-    return (dx * node.dy_partition - dy * node.dx_partition) <= 0;
+    return (dx * node.dy - dy * node.dx) <= 0;
 }
 
 void BinarySpacePartitioning::renderSubSector(int subSectorId)
