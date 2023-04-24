@@ -1,4 +1,4 @@
-#include <bsp.hpp>
+#include "bsp.hpp"
 
 BSP::BSP(Player& player) : player(player) {
 	//loader.LoadWAD("doom1.wad");

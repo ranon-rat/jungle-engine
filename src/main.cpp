@@ -7,6 +7,8 @@
 #include "player.hpp"
 #include "raycasting.hpp"
 #include "fps.hpp"
+#include "graphics.hpp"
+#include "sectors.hpp"
 
 int main(int argc, char *argv[]) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -67,7 +69,17 @@ int main(int argc, char *argv[]) {
   Player player;
 
   FPSCounter fpsCounter = FPSCounter();
-
+  Sectors map={
+    {
+      .id=1,
+      .walls={
+        {{4,4},{8,8}},
+        {{8,8},{4,8}}
+        },
+      .zFloor=0,
+      .zCeiling=0,
+    }
+  };
   while (done == SDL_FALSE) {
     SDL_Event event;
 
@@ -76,9 +88,12 @@ int main(int argc, char *argv[]) {
 
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
-    RayCastMatrixMap(renderer, points,points, player);
-    world->draw(renderer);
-    player.Show(renderer);
+   // draw_wall(renderer,2,v2f{.x=20,.y=20},v2f{30,30},v2f{20,50},v2f{30,0});
+    PlainRender(renderer,map,player);
+   // RayCastMatrixMap(renderer, points,points, player);
+   // world->draw(renderer);
+   // player.Show(renderer);
+   
     SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
     SDL_RenderPresent(renderer);
 

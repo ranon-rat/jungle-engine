@@ -30,3 +30,8 @@ struct v2i {
   int x;
   int y;
 };
+
+struct v3i {
+  int x;
+  int y;
+};

@@ -12,13 +12,13 @@ void Player::Move(SDL_Event event) {
   if (event.type != SDL_KEYDOWN) return;
   switch (event.key.keysym.sym) {
     case SDLK_w:
-      this->y += sin(horizontal_angle*RAD) * 0.1;
-      this->x += cos(horizontal_angle*RAD) * 0.1;
+      this->y += sin(horizontal_angle*RAD) ;
+      this->x += cos(horizontal_angle*RAD) ;
       break;
     case SDLK_s:
 
-      this->y -= sin(horizontal_angle*RAD) * 0.1;
-      this->x -= cos(horizontal_angle) * 0.1;
+      this->y -= sin(horizontal_angle*RAD) ;
+      this->x -= cos(horizontal_angle*RAD) ;
       break;
     case SDLK_a:
 
