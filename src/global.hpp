@@ -1,3 +1,4 @@
+#pragma once
 #define RAD 0.0174533
 #define DEG 57.2958
 #define MAXANG  0.00277777777//1/360
@@ -20,3 +21,12 @@
 
 #define SKY_WIDTH 16
 #define SKY_HEIGHT 16
+
+struct v2f {
+  float x;
+  float y;
+};
+struct v2i {
+  int x;
+  int y;
+};

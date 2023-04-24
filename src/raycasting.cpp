@@ -2,29 +2,28 @@
 #include "raycasting.hpp"
 
 #include <cstring>
+
 #include "texture.hpp"
 
-
-
-void RayCastMatrixMap(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],int Floor[MAP_HEIGHT][MAP_WIDTH],
-                      Player p) {
+//TODO: I NEED TO OPTIMIZE THIS SHIT
+void RayCastMatrixMap(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],
+                      int Floor[MAP_HEIGHT][MAP_WIDTH], Player p) {
   float proj_dis = 0.5 * 5 / tan(FOV_VERTICAL);
-  float inv_render_dis=1/MAX_RENDER_DISTANCE;
-
+  float inv_render_dis = 1 / MAX_RENDER_DISTANCE;
 
   for (float xw = 0; xw <= WIDTH; xw++) {
-    float alpha = FOV_HORIZONTAL * ((0.5 * WIDTH - xw)/(WIDTH-1)) +
-                  p.horizontal_angle*RAD;
+    float alpha = FOV_HORIZONTAL * ((0.5 * WIDTH - xw) / (WIDTH - 1)) +
+                  p.horizontal_angle * RAD;
 
     Square interWalls = IntersectDDA(p.x, p.y, alpha, walls);
-    
+
     // so i need to know if i have intersect to something
     // so i use this property for that
     if (!interWalls.found) continue;
     // i use the distance for calculating the brightness, obviously i use fmin
     // because the distance can be bigger than the max_render_distance so yeah
     float brightness =
-        (1 - fmin(interWalls.dis, MAX_RENDER_DISTANCE) *inv_render_dis) *
+        (1 - fmin(interWalls.dis, MAX_RENDER_DISTANCE) * inv_render_dis) *
         ((interWalls.side) ? 0.5 : 1);
 
     int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH];
@@ -61,31 +60,28 @@ void RayCastMatrixMap(SDL_Renderer *renderer, int walls[MAP_HEIGHT][MAP_WIDTH],i
         std::memcpy(texture, texture1, sizeof(texture));
 
         break;
-        
     }
-    float height =
-        (HEIGHT*proj_dis  / (interWalls.dis * cos(alpha - p.horizontal_angle*RAD)));
+    float height = (HEIGHT * proj_dis /
+                    (interWalls.dis * cos(alpha - p.horizontal_angle * RAD)));
     float start = 0.5 * (HEIGHT - height);
     float end = 0.5 * (HEIGHT + height);
-    //DrawSky(start,xw,p.horizontal_angle,renderer);
+    // DrawSky(start,xw,p.horizontal_angle,renderer);
     if (interWalls.side)
-      DrawTextureSquareWalls(interWalls.y, interWalls.yc, start,end, xw, color, texture,
-                        renderer);
+      DrawTextureSquareWalls(interWalls.y, interWalls.yc, start, end, xw, color,
+                             texture, renderer);
     else
-      DrawTextureSquareWalls(interWalls.x, interWalls.xc, start, end, xw, color, texture,
-                        renderer);
+      DrawTextureSquareWalls(interWalls.x, interWalls.xc, start, end, xw, color,
+                             texture, renderer);
   }
- 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
 
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
 }
 
-
-
-void drawTextureSquareFloor(float alpha,float xi,float yi,float start,float end){
-  for(float y=end;y<HEIGHT;y++){
-    float dy=y-(HEIGHT/2);
-    float tx=xi/2+cos(alpha);
+void drawTextureSquareFloor(float alpha, float xi, float yi, float start,
+                            float end) {
+  for (float y = end; y < HEIGHT; y++) {
+    float dy = y - (HEIGHT / 2);
+    float tx = xi / 2 + cos(alpha);
   }
 }
 
@@ -101,7 +97,6 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
   float ray_x = origin_x;
   float ray_y = origin_y;
   // points of intersection
-
 
   // this will be used for knowing the line size depending of wich direction we
   // are using
@@ -176,23 +171,22 @@ Square IntersectDDA(float origin_x, float origin_y, float alpha,
 }
 
 void DrawTextureSquareWalls(float xi, float x0, float start, float end, int xw,
-                       SDL_Color color,
-                       int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
-                       SDL_Renderer *renderer) {
+                            SDL_Color color,
+                            int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
+                            SDL_Renderer *renderer) {
   int i = ((xi - x0) * TEXTURE_WIDTH);
   // just use the distance from point b to point a, but is just a square so i
   // dont need to do that much so yeah
-  int uend= fmin(end, HEIGHT);
-  float texture_dy=(end-start)/TEXTURE_HEIGHT;
+  int uend = fmin(end, HEIGHT);
+  float texture_dy = (end - start) / TEXTURE_HEIGHT;
   for (int u = fmax(start, 0); u < uend; u++) {
-int v=int(u-start)/texture_dy;
+    int v = int(u - start) / texture_dy;
 
- 
     int p = texture[v * TEXTURE_WIDTH + i];
     // it works the same as the other
 
     SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
-                          color.a);
+                           color.a);
     SDL_RenderDrawPoint(renderer, xw, u);
   }
 }
@@ -203,43 +197,40 @@ int v=int(u-start)/texture_dy;
 // start and end are the y coordinates on the screen to draw the texture
 // same for xw but its the x coordinate of the screen
 
-void DrawTextureWalls(float xi, float yi, float x1, float y1, float x2, float y2,
-                 float start, float end, int xw, SDL_Color color,
-                 SDL_Renderer *renderer) {
+void DrawTextureWalls(float xi, float yi, float x1, float y1, float x2,
+                      float y2, float start, float end, int xw, SDL_Color color,
+                      SDL_Renderer *renderer) {
   float wallLength = Dis(x1, y1, x2, y2);
   // idk
   int i = (Dis(x1, y1, xi, yi) / wallLength) * 7;
-    int uend=fmin(end, HEIGHT);
+  int uend = fmin(end, HEIGHT);
 
   for (int u = fmax(start, 0); u < uend; u++) {
     int v = (u - start) / (end - start) * 7;
     int p = texture1[v * TEXTURE_WIDTH + i];
 
     SDL_SetRenderDrawColor(renderer, color.r * p, color.g * p, color.b * p,
-                         color.a);
+                           color.a);
 
     SDL_RenderDrawPoint(renderer, xw, u);
   }
 };
 
-void DrawSky(int start,int xw,float alpha, SDL_Renderer *renderer) {
-  int sky_y=0;
-  int sky_dy=HEIGHT/SKY_HEIGHT;
+void DrawSky(int start, int xw, float alpha, SDL_Renderer *renderer) {
+  int sky_y = 0;
+  int sky_dy = HEIGHT / SKY_HEIGHT;
   for (int y = 0; y < start; y++) {
-    if(y%sky_dy==0){
+    if (y % sky_dy == 0) {
       sky_y++;
-
     }
-     int xo =((SKY_WIDTH-1)* (alpha+xw )*MAXANG);
-      if (xo < 0) xo += (SKY_WIDTH-1);
-      if(xo>(SKY_WIDTH))xo=xo%(SKY_WIDTH-1);
+    int xo = ((SKY_WIDTH - 1) * (alpha + xw) * MAXANG);
+    if (xo < 0) xo += (SKY_WIDTH - 1);
+    if (xo > (SKY_WIDTH)) xo = xo % (SKY_WIDTH - 1);
 
-    
-      int p = sky[sky_y * SKY_WIDTH + (xo)];
-      // it works the same as the other
-      SDL_SetRenderDrawColor(renderer, 20 * p, 0, 20 * p, 255);
-      SDL_RenderDrawPoint(renderer, xw, y);
-    
+    int p = sky[sky_y * SKY_WIDTH + (xo)];
+    // it works the same as the other
+    SDL_SetRenderDrawColor(renderer, 20 * p, 0, 20 * p, 255);
+    SDL_RenderDrawPoint(renderer, xw, y);
   }
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
