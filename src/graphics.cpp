@@ -8,11 +8,11 @@ const std::vector<SDL_Color> colors_walls = {
 };
 void draw_wall(SDL_Renderer *renderer, int kind, v2f p0f, v2f p1f, v2f p0c,
                v2f p1c) {
-  if (p0f.x == p1f.x) {
+  if (p0f.x == p1f.x||p0f.x > p1f.x) {
     std::cout << "not allowed\n";
     return;
   }
-
+ 
   // this is being used for drawing the lines that i have projected using some
   // basic equations that i will be making ceiling
   float mf = (p1f.y - p0f.y) / (p1f.x - p0f.x);
