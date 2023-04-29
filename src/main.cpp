@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     {
       .id=1,
       .walls={
-        {{4,4},{8,8}},
+        {{4,4},{4,0}},
        
         },
       .zFloor=0,
@@ -88,8 +88,8 @@ int main(int argc, char *argv[]) {
 
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
-   // draw_wall(renderer,2,v2f{.x=20,.y=20},v2f{30,30},v2f{20,50},v2f{30,0});
   RenderSectors (renderer,map,player);
+PlainRender(renderer,map,player);
    // RayCastMatrixMap(renderer, points,points, player);
    // world->draw(renderer);
    // player.Show(renderer);

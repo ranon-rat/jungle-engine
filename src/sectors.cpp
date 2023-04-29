@@ -20,11 +20,18 @@ Wall RotateAndMoveWall(Wall wall, Player player) {
   // y
   w.v0.y = x0 * sn + y0 * cs;
   w.v1.y = x1 * sn + y1 * cs;
-
+  if(w.v0.y==0){
+    w.v0.y=0.0001;
+  }
+  if(w.v1.y==0){
+    w.v1.y=0.0001;
+  }
   return w;
 }
 
 void RenderSectors(SDL_Renderer *renderer, Sectors sectors, Player player) {
+    SDL_SetRenderDrawColor(renderer, 255,255,255, 70);
+
   for (Sector sector : sectors) {
     for (Wall wall : sector.walls) {
       Wall w = RotateAndMoveWall(wall, player);
@@ -33,16 +40,24 @@ void RenderSectors(SDL_Renderer *renderer, Sectors sectors, Player player) {
       v2f pc0;
       v2f pc1;
 
-      float x0 = (w.v0.x / w.v0.y) * WIDTH / 2;
-      float x1 = (w.v1.x / w.v1.y) * WIDTH / 2;
+      float x0 = (w.v0.x / w.v0.y) * 200+WIDTH/2;
+      float x1 = (w.v1.x / w.v1.y) * 200+WIDTH/2;
+      float y0=w.v0.y;
+      float y1=w.v1.y;
+
       std::cout << x0 << " " << x1 << "\n";
             std::cout << w.v0.x << " " << w.v1.x  << "\n";
 
 
       if (x0 > x1) {
         float cx = x0;
+        float cy=y0;
+
+
         x0 = x1;
         x1 = cx;
+        y0=y1;
+        y1=cy;
       }
       if (x0 == x1) {
         continue;
@@ -51,19 +66,26 @@ void RenderSectors(SDL_Renderer *renderer, Sectors sectors, Player player) {
       // y will beused as zs
       // floor
       pf0.x = x0;
-      pf0.y = ((sector.zFloor - player.z) / w.v0.y) * (HEIGHT);
+      pf0.y = ((sector.zFloor - player.z) / y0) *200+HEIGHT/2;
 
       pf1.x = x1;
-      pf1.y = ((sector.zFloor - player.z) / w.v1.y) * (HEIGHT );
+      pf1.y = ((sector.zFloor - player.z) /y1) * 200+HEIGHT/2;
       // ceiling
       pc0.x = x0;
-      pc0.y = ((sector.zFloor + sector.zCeiling - player.z) / w.v0.y) *
-              (HEIGHT);
+      pc0.y = ((sector.zFloor + sector.zCeiling - player.z) / y0) *
+              200+HEIGHT/2;
 
       pc1.x = x1;
-      pc1.y = ((sector.zFloor + sector.zCeiling - player.z) / w.v1.y) *
-              (HEIGHT );
+      pc1.y = ((sector.zFloor + sector.zCeiling - player.z) /y1) *
+              200+HEIGHT/2;
       draw_wall(renderer, 1, pf0, pf1, pc0, pc1);
+    // SDL_RenderDrawLine(renderer, pf0.x,pf0.y,pf1.x,pf1.y);
+    // SDL_RenderDrawLine(renderer, pc0.x,pc0.y,pc1.x,pc1.y);
+    // SDL_RenderDrawLine(renderer, pf0.x,pf0.y,pc0.x,pc0.y);
+    //SDL_RenderDrawLine(renderer, pf1.x,pf1.y,pc1.x,pc1.y);
+
+
+
     }
   }
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 70);
