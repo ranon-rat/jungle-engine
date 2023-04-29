@@ -8,7 +8,7 @@ using namespace std;
 
 void World::drawWall(SDL_Renderer *renderer, SDL_Rect rect, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderDrawRect(renderer, &rect);
+    SDL_RenderFillRect(renderer, &rect);
 }
 
 void World::draw(SDL_Renderer *renderer)

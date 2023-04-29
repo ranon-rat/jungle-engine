@@ -88,11 +88,11 @@ int main(int argc, char *argv[]) {
 
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
-  RenderSectors (renderer,map,player);
-PlainRender(renderer,map,player);
-   // RayCastMatrixMap(renderer, points,points, player);
-   // world->draw(renderer);
-   // player.Show(renderer);
+//  RenderSectors (renderer,map,player);
+//PlainRender(renderer,map,player);
+    RayCastMatrixMap(renderer, points,points, player);
+    world->draw(renderer);
+    player.Show(renderer);
    
     SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
     SDL_RenderPresent(renderer);

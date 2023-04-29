@@ -174,7 +174,7 @@ void DrawTextureSquareWalls(float xi, float x0, float start, float end, int xw,
                             SDL_Color color,
                             int texture[TEXTURE_HEIGHT * TEXTURE_WIDTH],
                             SDL_Renderer *renderer) {
-  int i = ((xi - x0) * TEXTURE_WIDTH);
+   int i = ((xi - x0) * TEXTURE_WIDTH);
   // just use the distance from point b to point a, but is just a square so i
   // dont need to do that much so yeah
   int uend = fmin(end, HEIGHT);
