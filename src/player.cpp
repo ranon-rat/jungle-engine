@@ -43,7 +43,7 @@ void Player::Move(SDL_Event event) {
     horizontal_angle += 360;
   }
 
-  if (horizontal_angle >= 360) {
+  if (horizontal_angle > 359) {
     horizontal_angle -= 360;
   }
 }

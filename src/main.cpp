@@ -2,13 +2,14 @@
 
 #include <vector>
 
+#include "fps.hpp"
 #include "global.hpp"
+#include "graphics.hpp"
 #include "map.hpp"
 #include "player.hpp"
 #include "raycasting.hpp"
-#include "fps.hpp"
-#include "graphics.hpp"
 #include "sectors.hpp"
+#define RAYCASTING
 
 int main(int argc, char *argv[]) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -69,17 +70,16 @@ int main(int argc, char *argv[]) {
   Player player;
 
   FPSCounter fpsCounter = FPSCounter();
-  Sectors map={
-    {
-      .id=1,
-      .walls={
-        {{4,4},{4,0}},
-       
-        },
-      .zFloor=0,
-      .zCeiling=10,
-    }
-  };
+  Sectors map = {{
+      .id = 1,
+      .walls =
+          {
+              {{4, 4}, {4, 0}},
+
+          },
+      .zFloor = 0,
+      .zCeiling = 10,
+  }};
   while (done == SDL_FALSE) {
     SDL_Event event;
 
@@ -88,19 +88,21 @@ int main(int argc, char *argv[]) {
 
       if (event.type == SDL_QUIT) done = SDL_TRUE;
     }
-//  RenderSectors (renderer,map,player);
-//PlainRender(renderer,map,player);
-    RayCastMatrixMap(renderer, points,points, player);
+#if defined(RAYCASTING)
+    RayCastMatrixMap(renderer, points, points, player);
     world->draw(renderer);
     player.Show(renderer);
-   
-    SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
+
+#else
+    RenderSectors(renderer, map, player);
+
+#endif
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderPresent(renderer);
 
     SDL_Delay(1000 / 60);
     cout << "FPS:" << fpsCounter.tick() << endl;
     SDL_RenderClear(renderer);
-
   }
 
   SDL_DestroyRenderer(renderer);

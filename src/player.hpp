@@ -11,6 +11,7 @@ class Player {
  public:
   float horizontal_angle = 0;
   float vertical_angle=1;
+  float player_height=1;
 
   float x = 1.5;
   float y = 1.5;
