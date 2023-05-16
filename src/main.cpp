@@ -9,7 +9,7 @@
 #include "player.hpp"
 #include "raycasting.hpp"
 #include "sectors.hpp"
-#define RAYCASTING
+//#define RAYCASTING
 
 int main(int argc, char *argv[]) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
       .id = 1,
       .walls =
           {
-              {{4, 4}, {4, 0}},
+              {{4, 4}, {0, 0}},
 
           },
       .zFloor = 0,
@@ -95,6 +95,7 @@ int main(int argc, char *argv[]) {
 
 #else
     RenderSectors(renderer, map, player);
+    PlainRender(renderer, map, player);
 
 #endif
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
